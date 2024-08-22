@@ -1,0 +1,54 @@
+.tinder-abstracts-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.no-more-papers {
+    text-align: center;
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+.metadata-container {
+    width: 100%;
+}
+
+.ant-card {
+    margin-bottom: 20px;
+}
+
+.ant-card-actions {
+    background-color: #f0f2f5;
+}
+
+.ant-progress-text {
+    font-size: 14px;
+}
+
+.ant-divider-vertical {
+    height: 12px;
+    margin: 0 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .tinder-abstracts-container {
+        padding: 10px;
+    }
+
+    .ant-card-actions {
+        flex-direction: column;
+    }
+
+    .ant-card-actions>li {
+        margin-bottom: 10px;
+    }
+}

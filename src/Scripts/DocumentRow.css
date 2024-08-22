@@ -1,0 +1,47 @@
+.abstract-cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+    /* Adjust width as needed */
+}
+
+button {
+    margin-right: 10px;
+}
+
+.expanded-details {
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+.expanded-row td {
+    padding: 0;
+    border: none;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.expanded-row .expanded-details {
+    padding: 10px;
+    width: 100%;
+}
+
+.IconButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+tr {
+    transition: all 0.3s ease;
+}
