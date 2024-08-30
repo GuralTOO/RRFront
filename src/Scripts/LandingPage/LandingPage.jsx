@@ -35,7 +35,7 @@ const LandingPage = () => {
                                     <span className="block text-blue-600 xl:inline">literature reviews</span>
                                 </h1>
                                 <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                                    LitReview AI uses advanced machine learning to streamline your systematic review process,
+                                    RapidReview uses advanced machine learning to streamline your systematic review process,
                                     helping researchers save time and increase efficiency in the abstract review phase.
                                 </p>
                                 <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
@@ -135,7 +135,7 @@ const LandingPage = () => {
                         </a>
                     </div>
                     <div className="mt-8 md:mt-0 md:order-1">
-                        <p className="text-center text-base text-gray-400">&copy; 2023 LitReview AI. All rights reserved.</p>
+                        <p className="text-center text-base text-gray-400">&copy; 2023 RapidReview AI. All rights reserved.</p>
                     </div>
                 </div>
             </footer>
