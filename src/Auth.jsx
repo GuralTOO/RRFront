@@ -66,21 +66,6 @@ export default function Auth() {
         setLoading(false);
     };
 
-    const handleGoogleLogin = async () => {
-        setLoading(true);
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: window.location.origin + '/dashboard'
-            }
-        });
-        if (error) {
-            alert(error.error_description || error.message);
-            console.log(error);
-        }
-        setLoading(false);
-    };
-
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
@@ -102,22 +87,6 @@ export default function Auth() {
                         </AuthButton>
                     </div>
                 </form>
-                {/* <div className="mt-6">
-                    <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-300"></div>
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-gray-50 text-gray-500">
-                                Or continue with
-                            </span>
-                        </div>
-                    </div>
-                    <div className="mt-6">
-                        <GoogleSignInButton onClick={handleGoogleLogin} />
-                        <GoogleButton onClick={handleGoogleLogin} />
-                    </div>
-                </div> */}
             </div>
         </div>
     );
