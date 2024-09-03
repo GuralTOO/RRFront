@@ -42,26 +42,32 @@ export default function Auth() {
         });
 
         return () => {
-            authListener.subscription.unsubscribe();
+            if (authListener && authListener.subscription) {
+                authListener.subscription.unsubscribe();
+            }
         };
     }, [navigate]);
 
     const handleEmailLogin = async (event) => {
         event.preventDefault();
         setLoading(true);
-        let redirectLink = window.location.origin + '/dashboard';
+
+        // Use only the origin, not including '/dashboard'
+        let redirectTo = window.location.origin;
+
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
-                redirectTo: redirectLink
+                emailRedirectTo: redirectTo
             }
         });
+
         if (error) {
             alert(error.error_description || error.message);
-            console.log(error);
+            console.error(error);
         } else {
             alert('Check your email for the login link!');
-            console.log("redirecting to url: ", redirectLink);
+            console.log("Redirect URL set to:", redirectTo);
         }
         setLoading(false);
     };
