@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Navigate, Routes, useNavigate, useLocat
 import { supabase } from './supabaseClient'
 import './App.css'
 import Navigation from './Scripts/Experiment/Navigation'
+import Navigation2 from './Scripts/Experiment/Navigation2';
 import LandingPage from './Scripts/LandingPage/LandingPage'
 import LandingPage2 from './Scripts/LandingPage/LandingPage2';
 import LandingPage3 from './Scripts/LandingPage/LandingPage3';
@@ -15,6 +16,7 @@ import AllPapers from './Scripts/Experiment/pages/AllPapers';
 import UserSettingsPage from './Scripts/Settings/UserSettingsPage';
 import ProjectDetails from './Scripts/Experiment/pages/Project/ProjectDetails';
 import TinderForAbstracts from './Scripts/Experiment/pages/Project/Tinder/TinderForAbstracts';
+
 
 function App() {
   const [session, setSession] = useState(null)
@@ -59,7 +61,7 @@ function App() {
         <Route path="/" element={<LandingPage5 />} />
         <Route path="/login" element={<Auth />} />
         {session ? (
-          <Route path="/*" element={<Navigation session={session} />}>
+          <Route path="/*" element={<Navigation2 session={session} />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="projects" element={<AllProjects />} />
             <Route path="projects/:projectId" element={<ProjectDetails />} />
