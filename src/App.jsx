@@ -4,6 +4,10 @@ import { supabase } from './supabaseClient'
 import './App.css'
 import Navigation from './Scripts/Experiment/Navigation'
 import LandingPage from './Scripts/LandingPage/LandingPage'
+import LandingPage2 from './Scripts/LandingPage/LandingPage2';
+import LandingPage3 from './Scripts/LandingPage/LandingPage3';
+import LandingPage4 from './Scripts/LandingPage/LandingPage4';
+import LandingPage5 from './Scripts/LandingPage/LandingPage5';
 import Auth from './Auth'
 import Dashboard from './Scripts/Experiment/pages/Dashboard';
 import AllProjects from './Scripts/Experiment/pages/AllProjects';
@@ -52,7 +56,7 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage5 />} />
         <Route path="/login" element={<Auth />} />
         {session ? (
           <Route path="/*" element={<Navigation session={session} />}>

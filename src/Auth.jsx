@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
-import { Mail } from 'lucide-react';
+import { Mail, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-// import GoogleSignInButton from '../GoogleSignInButton';
 
 const EmailInput = ({ value, onChange }) => (
     <div className="relative">
@@ -28,6 +27,14 @@ const AuthButton = ({ loading, children, ...props }) => (
     </button>
 );
 
+const BackButton = ({ onClick }) => (
+    <button
+        onClick={onClick}
+        className="flex items-center text-blue-600 hover:text-blue-800 transition duration-200"
+    >
+        <ArrowLeft className="mr-2" size={20} />
+    </button>
+);
 
 export default function Auth() {
     const [loading, setLoading] = useState(false);
@@ -51,10 +58,7 @@ export default function Auth() {
     const handleEmailLogin = async (event) => {
         event.preventDefault();
         setLoading(true);
-
-        // Use only the origin, not including '/dashboard'
         let redirectTo = window.location.origin;
-
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
@@ -76,8 +80,9 @@ export default function Auth() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
                 <div>
+                    <BackButton onClick={() => navigate('/')} />
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Welcome back!
+                        Welcome!
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
                         Sign in to access your account
