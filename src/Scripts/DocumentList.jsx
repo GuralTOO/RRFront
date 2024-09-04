@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react';
-// import './DocumentList.css';
 import DocumentRow from './DocumentRow';
-// import { Select, Spin, Pagination } from "antd";
-// import * as Label from '@radix-ui/react-label';
-import { getUnreviewedPapers } from '@/api/papersApi';
+import { getFilteredPapers } from '@/api/papersApi';
 import AddPaperModal from './Experiment/pages/Project/AddPaperModal';
 import { addPaper } from '@/api/papersApi';
-
-import { Spin } from 'antd';
+import { Spin, Typography } from 'antd';
 import {
     Select, SelectTrigger,
     SelectContent, SelectItem, SelectValue,
@@ -17,7 +13,6 @@ import {
     Table, TableCaption
     , TableHeader, TableRow, TableHead, TableBody
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import {
     Pagination,
     PaginationContent,
@@ -26,170 +21,11 @@ import {
     PaginationNext,
     PaginationPrevious
 } from "@/components/ui/pagination";
+const { Title, Paragraph, Text } = Typography;
 
-
-const { Option } = Select;
-
-// const DocumentList = ({ projectId }) => {
-//     const [sortType, setSortType] = useState('created_at');
-//     // const [ascending, setAscending] = useState(false);
-//     const [expandedIndex, setExpandedIndex] = useState(null);
-//     const [documents, setDocuments] = useState([]);
-//     const [isLoading, setIsLoading] = useState(true);
-//     const [error, setError] = useState(null);
-//     const [currentPage, setCurrentPage] = useState(1);
-//     const [totalDocuments, setTotalDocuments] = useState(0);
-//     const pageSize = 50;
-
-
-// const fetchDocuments = async (page = 1) => {
-//     setIsLoading(true);
-//     setError(null);
-//     try {
-//         const result = await getUnreviewedPapers(projectId, sortType, ascending, page, pageSize);
-//         setDocuments(result.data);
-//         setTotalDocuments(result.totalCount);
-//     } catch (error) {
-//         console.error('Error fetching documents:', error);
-//         setError('Failed to load documents. Please try again.');
-//     } finally {
-//         setIsLoading(false);
-//     }
-// };
-
-
-// useEffect(() => {
-//     fetchDocuments();
-// }, [projectId, sortType, ascending]);
-
-// const handleAddPaper = async (paperData) => {
-//     // TODO: Implement the API call to add the paper to the database
-//     console.log('Adding paper:', paperData);
-//     // call the API to add the paper
-//     await addPaper(paperData, projectId);
-//     // After successfully adding the paper, you might want to refresh the document list
-//     fetchDocuments();
-// };
-
-// const handleSortChange = (value) => {
-//     let newSortType, newAscending;
-
-//     switch (value) {
-//         case 'title_asc':
-//             newSortType = 'title';
-//             newAscending = true;
-//             break;
-//         case 'title_desc':
-//             newSortType = 'title';
-//             newAscending = false;
-//             break;
-//         case 'created_at_asc':
-//             newSortType = 'created_at';
-//             newAscending = true;
-//             break;
-//         case 'created_at_desc':
-//             newSortType = 'created_at';
-//             newAscending = false;
-//             break;
-//         case 'publication_date_asc':
-//             newSortType = 'publication_date';
-//             newAscending = true;
-//             break;
-//         case 'publication_date_desc':
-//             newSortType = 'publication_date';
-//             newAscending = false;
-//             break;
-//         case 'relevancy_score_asc':
-//             newSortType = 'relevancy_score';
-//             newAscending = true;
-//             break;
-//         case 'relevancy_score_desc':
-//             newSortType = 'relevancy_score';
-//             newAscending = false;
-//             break;
-//         default:
-//             newSortType = 'created_at';
-//             newAscending = false;
-//     }
-
-//     setSortType(newSortType);
-//     setAscending(newAscending);
-//     setCurrentPage(1);
-// };
-
-// const handlePageChange = (page) => {
-//     setCurrentPage(page);
-//     fetchDocuments(page);
-// };
-
-// const toggleExpand = (index) => {
-//     setExpandedIndex(expandedIndex === index ? null : index);
-// };
-
-// if (error) return <div>Error: {error}</div>;
-
-// return (
-//     <div className="document-list-container">
-//         <AddPaperModal onAddPaper={handleAddPaper} />
-//         <div className="sort-dropdown">
-//             <Label.Root htmlFor="sort" className='LabelRoot'>
-//                 Sort by:
-//             </Label.Root>
-//             <Select
-//                 id="sort"
-//                 value={`${sortType}_${ascending ? 'asc' : 'desc'}`}
-//                 onChange={handleSortChange}
-//                 style={{ width: 220 }}
-//             >
-//                 <Option value="created_at_desc">Date Uploaded (Newest)</Option>
-//                 <Option value="created_at_asc">Date Uploaded (Oldest)</Option>
-//                 <Option value="publication_date_desc">Date of Publishing (Newest)</Option>
-//                 <Option value="publication_date_asc">Date of Publishing (Oldest)</Option>
-//                 <Option value="title_asc">Title (A-Z)</Option>
-//                 <Option value="title_desc">Title (Z-A)</Option>
-//                 <Option value="relevancy_score_desc">Relevance (High to Low)</Option>
-//                 <Option value="relevancy_score_asc">Relevance (Low to High)</Option>
-//             </Select>
-//         </div>
-//         {isLoading ? (
-//             <Spin size="large" />
-//         ) : (
-//             <>
-//                 <table>
-//                     <thead>
-//                         <tr>
-//                             <th>Title</th>
-//                             <th>Date of Pub.</th>
-//                             <th>Authors</th>
-//                             <th>RR score</th>
-//                             <th>Abstract</th>
-//                         </tr>
-//                     </thead>
-//                     <tbody>
-//                         {documents.map((doc, index) => (
-//                             <DocumentRow
-//                                 key={doc.paper_id}
-//                                 doc={doc}
-//                                 index={index}
-//                                 expandedIndex={expandedIndex}
-//                                 toggleExpand={toggleExpand}
-//                             />
-//                         ))}
-//                     </tbody>
-//                 </table>
-//                 <Pagination
-//                     current={currentPage}
-//                     total={totalDocuments}
-//                     pageSize={pageSize}
-//                     onChange={handlePageChange}
-//                     showSizeChanger={false}
-//                 />
-//             </>
-//         )}
-//     </div>
-// );
 const DocumentList = ({ projectId }) => {
     const [sortConfig, setSortConfig] = useState({ field: 'created_at', ascending: false });
+    const [filterDecision, setFilterDecision] = useState('all');
     const [documents, setDocuments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -202,8 +38,9 @@ const DocumentList = ({ projectId }) => {
         setIsLoading(true);
         setError(null);
         try {
-            const result = await getUnreviewedPapers(
+            const result = await getFilteredPapers(
                 projectId,
+                filterDecision,
                 sortConfig.field,
                 sortConfig.ascending,
                 page,
@@ -221,7 +58,7 @@ const DocumentList = ({ projectId }) => {
 
     useEffect(() => {
         fetchDocuments(currentPage);
-    }, [projectId, sortConfig, currentPage]);
+    }, [projectId, sortConfig, currentPage, filterDecision]);
 
     const handleAddPaper = async (paperData) => {
         await addPaper(paperData, projectId);
@@ -234,15 +71,18 @@ const DocumentList = ({ projectId }) => {
             field = 'relevancy_score';
         } else if (field === 'publicationDate') {
             field = 'publication_date';
-        }
-        else if (field === 'createdAt') {
+        } else if (field === 'createdAt') {
             field = 'created_at';
-        }
-        else if (field === 'title') {
+        } else if (field === 'title') {
             field = 'title';
         }
         console.log('Sort by:', field, order);
         setSortConfig({ field, ascending: order === 'asc' });
+        setCurrentPage(1);
+    };
+
+    const handleFilterChange = (value) => {
+        setFilterDecision(value);
         setCurrentPage(1);
     };
 
@@ -272,7 +112,12 @@ const DocumentList = ({ projectId }) => {
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="text-2xl font-semibold">Affiliated Papers</h3>
+                <AddPaperModal onAddPaper={handleAddPaper} />
+            </div>
+
+            <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center space-x-2">
                     <Label htmlFor="sort">Sort by:</Label>
                     <Select onValueChange={handleSortChange} value={getSelectValue(sortConfig.field, sortConfig.ascending)}>
@@ -291,7 +136,21 @@ const DocumentList = ({ projectId }) => {
                         </SelectContent>
                     </Select>
                 </div>
-                <AddPaperModal onAddPaper={handleAddPaper} />
+                <div className="flex items-center space-x-2">
+                    <Label htmlFor="filter">Filter by:</Label>
+                    <Select onValueChange={handleFilterChange} value={filterDecision}>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Select filter" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Papers</SelectItem>
+                            <SelectItem value="unreviewed">Unreviewed</SelectItem>
+                            <SelectItem value="accept">Accepted</SelectItem>
+                            <SelectItem value="reject">Rejected</SelectItem>
+                            <SelectItem value="skip">Skipped</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
 
             {isLoading ? (
@@ -308,7 +167,7 @@ const DocumentList = ({ projectId }) => {
                                 <TableHead>Authors</TableHead>
                                 <TableHead>Date of Pub.</TableHead>
                                 <TableHead>RR score</TableHead>
-                                {/* <TableHead>Abstract</TableHead> */}
+                                <TableHead>Review Decision</TableHead>
                                 <TableHead></TableHead>
                             </TableRow>
                         </TableHeader>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Avatar, Progress, Row, Col, Typography } from 'antd';
+import { Card, Avatar, Progress, Row, Col, Typography, Tooltip } from 'antd';
 import { EditOutlined, DeleteOutlined, BarChartOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getUserProjects, createNewProject } from '../../../api/projectsApi';
@@ -39,6 +39,11 @@ const AllProjects = () => {
         createNewProject(projectName, "What is the meaning of life?");
     };
 
+    const truncateText = (text, maxLength) => {
+        if (text.length <= maxLength) return text;
+        return text.substr(0, maxLength) + '...';
+    };
+
     if (loading) return <div>Loading projects...</div>;
 
     return (
@@ -66,7 +71,11 @@ const AllProjects = () => {
                             <Meta
                                 avatar={<Avatar src={`https://api.dicebear.com/7.x/identicon/svg?seed=${project.name}`} />}
                                 title={project.name}
-                                description={project.description}
+                                description={
+                                    <Tooltip title={project.researchQuestion}>
+                                        {truncateText(project.researchQuestion, 80)}
+                                    </Tooltip>
+                                }
                             />
                             <div className="card-details">
                                 <p>Papers: {project.papers}</p>

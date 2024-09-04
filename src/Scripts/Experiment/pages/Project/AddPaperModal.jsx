@@ -9,9 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DatePicker } from 'antd';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import {
     Card,
@@ -65,7 +62,11 @@ const AddPaperModal = ({ onAddPaper }) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="mb-4">Add New Paper</Button>
+                <Button
+                    className="text-sm py-1.5 px-3 h-9" // Adjusted size and padding
+                >
+                    Add New Paper
+                </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[525px]">
                 <Card>
@@ -123,7 +124,7 @@ const AddPaperModal = ({ onAddPaper }) => {
                         </CardContent>
                         <CardFooter className="flex justify-between">
                             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                            <Button type="submit">Add Paper</Button>
+                            <Button type="submit">Add the paper</Button>
                         </CardFooter>
                     </form>
                 </Card>

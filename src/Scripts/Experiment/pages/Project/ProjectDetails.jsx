@@ -373,7 +373,6 @@ const ProjectDetails = () => {
                 </Space>
             </Card>
 
-            <Title level={3} className="affiliated-papers-title">Unreviewed Papers</Title>
             <DocumentList projectId={projectId} />
 
             <Modal

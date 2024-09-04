@@ -38,7 +38,7 @@ export async function getUserProjects() {
         return {
             id: project.project_id,
             name: project.name,
-            description: project.research_question,
+            researchQuestion: project.research_question,
             papers: paperCount,
             role: project.user_projects[0].role,
             progress: 0 // Placeholder, calculate this based on your logic
