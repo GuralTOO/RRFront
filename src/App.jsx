@@ -11,6 +11,9 @@ import LandingPage4 from './Scripts/LandingPage/LandingPage4';
 import LandingPage5 from './Scripts/LandingPage/LandingPage5';
 import Auth from './Auth'
 import Dashboard from './Scripts/Experiment/pages/Dashboard';
+import Dashboard2 from './Scripts/Experiment/pages/Dashboard2';
+import Dashboard3 from './Scripts/Experiment/pages/Dashboard3';
+import Dashboard4 from './Scripts/Experiment/pages/Dashboard4';
 import AllProjects from './Scripts/Experiment/pages/AllProjects';
 import AllPapers from './Scripts/Experiment/pages/AllPapers';
 import UserSettingsPage from './Scripts/Settings/UserSettingsPage';
@@ -62,7 +65,7 @@ function App() {
         <Route path="/login" element={<Auth />} />
         {session ? (
           <Route path="/*" element={<Navigation2 session={session} />}>
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard3 />} />
             <Route path="projects" element={<AllProjects />} />
             <Route path="projects/:projectId" element={<ProjectDetails />} />
             <Route path="projects/:projectId/review" element={<TinderForAbstracts />} />

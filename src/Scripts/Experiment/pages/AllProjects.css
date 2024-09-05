@@ -1,6 +1,7 @@
 .projects-container {
     padding: 24px;
     background: #f0f2f5;
+    border-radius: 8px;
     min-height: 100%;
 }
 
