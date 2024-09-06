@@ -56,13 +56,22 @@ const DocumentList = ({ projectId }) => {
         }
     };
 
+
     useEffect(() => {
         fetchDocuments(currentPage);
     }, [projectId, sortConfig, currentPage, filterDecision]);
 
     const handleAddPaper = async (paperData) => {
-        await addPaper(paperData, projectId);
-        fetchDocuments(currentPage);
+        setIsLoading(true);
+        try {
+            await addPaper(paperData, projectId);
+            await fetchDocuments(currentPage);
+        } catch (error) {
+            console.error('Error adding paper:', error);
+            setError('Failed to add paper. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleSortChange = (value) => {

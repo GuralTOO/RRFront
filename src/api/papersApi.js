@@ -172,6 +172,7 @@ export async function addPaper(paperData, projectId) {
         console.log('Paper added to the db:', data);
     }).catch((error) => {
         console.error('Error adding paper:', error);
+        return error;
     }).then(() => {
         // Calculate the relevancy score for the paper
         if (paper_id) {
@@ -181,8 +182,13 @@ export async function addPaper(paperData, projectId) {
                 console.error('Error calculating relevancy score:', error);
             });
         }
-    });
-    return paper_id;
+    }).catch((error) => {
+        console.error('Error adding paper:', error);
+        return error;
+    }).then(() => {
+        return paper_id;
+    }
+    );
 }
 
 export async function calculateRelevancyScore(paperId, projectId) {
