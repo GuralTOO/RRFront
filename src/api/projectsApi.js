@@ -1,4 +1,5 @@
 import { supabase } from '../supabaseClient';
+import { massUpdateRelevancyScores } from './papersApi';
 
 export async function getUserProjects() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -149,6 +150,12 @@ export async function editProject(projectId, field, value) {
         .select()
 
     if (error) throw new Error(`Error updating project: ${error.message}`);
+
+    // if the updated fields are keywords or research_question, we have to trigger the mass relevancy score update function to update the relevancy scores of all papers in the project
+    if (dbField === 'keywords' || dbField === 'research_question') {
+        await massUpdateRelevancyScores(projectId);
+    }
+
     if (!data || data.length === 0) {
         console.error('Update did not affect any rows');
         console.log('Project ID:', projectId);

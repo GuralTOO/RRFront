@@ -173,19 +173,33 @@ export async function addPaper(paperData, projectId) {
     }).catch((error) => {
         console.error('Error adding paper:', error);
     });
-    // calculateRelevancyScore(paper_id, projectId).then((data) => {
-    //     console.log('Relevancy score calculated:', data);
-    // }).catch((error) => {
-    //     console.error('Error calculating relevancy score:', error);
-    // });
+    calculateRelevancyScore(paper_id, projectId).then((data) => {
+        console.log('Relevancy score calculated and database updated.');
+    }).catch((error) => {
+        console.error('Error calculating relevancy score:', error);
+    });
     return paper_id;
 }
 
 export async function calculateRelevancyScore(paperId, projectId) {
     // Call the supabase cloud function to calculate the relevancy score
-    return await supabase.functions('calculate_relevancy_score')({
-        paper_id: paperId,
-        project_id: projectId
+    return await supabase.functions.invoke('calculate_relevancy_score', {
+        body: {
+            paper_id: paperId,
+            project_id: projectId
+        }
+    });
+}
+
+export async function massUpdateRelevancyScores(projectId) {
+    // Fetch all the papers for the project
+    const { data: papers, error: papersError } = await supabase
+        .from('project_papers')
+        .select('paper_id')
+        .eq('project_id', projectId);
+    // Call the supabase cloud function to calculate the relevancy score using the pairs of paper_id and project_id
+    papers.forEach(async (paper) => {
+        await calculateRelevancyScore(paper.paper_id, projectId);
     });
 }
 
