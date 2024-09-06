@@ -164,3 +164,60 @@ export async function editProject(projectId, field, value) {
 
     return data[0]; // Return the updated project data
 }
+
+export async function getUserRole(projectId) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('No user logged in');
+
+    const { data: userProject, error: userProjectError } = await supabase
+        .from('user_projects')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('project_id', projectId)
+        .single();
+
+    if (userProjectError) throw new Error(`Error checking project: ${userProjectError.message}`);
+    if (!userProject) throw new Error('Project not found or user does not have access');
+
+    return userProject.role;
+}
+
+export async function inviteUserToProject(projectId, email, role) {
+    // Check the profiles table to retrieve the user_id associated with the email
+    const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('username', email)
+        .single();
+
+
+    if (profilesError) throw new Error(`Error checking profiles: ${profilesError.message}`);
+    if (!profiles) throw new Error('User not found');
+
+    const user_id = profiles.id;
+
+    const { data: existingUser, error: existingUserError } = await supabase
+        .from('user_projects')
+        .select('role')
+        .eq('user_id', user_id)
+        .eq('project_id', projectId)
+        .maybeSingle();
+
+    if (existingUserError) {
+        throw new Error(`Error checking existing user: ${existingUserError.message}`);
+    }
+
+    if (existingUser) {
+        throw new Error('User is already a member of the project');
+    }
+    // Add the user to the project
+    const { data, error } = await supabase
+        .from('user_projects')
+        .insert([{ user_id, project_id: projectId, role }]);
+
+    if (error) throw new Error(`Error inviting user: ${error.message}`);
+    if (!data || data.length === 0) throw new Error('User could not be invited');
+
+    return data[0];
+}
+
