@@ -172,23 +172,34 @@ export async function addPaper(paperData, projectId) {
         console.log('Paper added to the db:', data);
     }).catch((error) => {
         console.error('Error adding paper:', error);
-    });
-    calculateRelevancyScore(paper_id, projectId).then((data) => {
-        console.log('Relevancy score calculated and database updated.');
-    }).catch((error) => {
-        console.error('Error calculating relevancy score:', error);
+    }).then(() => {
+        // Calculate the relevancy score for the paper
+        if (paper_id) {
+            calculateRelevancyScore(paper_id, projectId).then((data) => {
+                console.log('Relevancy score calculated:', data);
+            }).catch((error) => {
+                console.error('Error calculating relevancy score:', error);
+            });
+        }
     });
     return paper_id;
 }
 
 export async function calculateRelevancyScore(paperId, projectId) {
-    // Call the supabase cloud function to calculate the relevancy score
-    return await supabase.functions.invoke('calculate_relevancy_score', {
+    console.log('Calculating relevancy score for paper', paperId, 'in project', projectId);
+    const { data, error } = await supabase.functions.invoke('calculate_relevancy_score', {
         body: {
             paper_id: paperId,
             project_id: projectId
         }
     });
+
+    if (error) {
+        console.error('Error calling calculate_relevancy_score:', error);
+        throw error;
+    }
+
+    return data;
 }
 
 export async function massUpdateRelevancyScores(projectId) {
