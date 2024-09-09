@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Card, Typography, Button, Progress, Modal, Tooltip, Space, Spin, Tag } from 'antd';
 import { ArrowLeftOutlined, EditOutlined, QuestionCircleOutlined, FileSearchOutlined, TagsOutlined, UserOutlined } from '@ant-design/icons';
 import { Textarea } from "@/components/ui/textarea";
@@ -199,14 +199,9 @@ const ProjectDetails = () => {
                         <Tooltip title="Project Progress">
                             <Progress type="circle" percent={project.progress} size={80} />
                         </Tooltip>
-                        <Button
-                            icon={<FileSearchOutlined />}
-                            onClick={() => navigate(`/ projects / ${projectId}/review`)
-                            }
-                            type="primary"
-                        >
-                            Review Papers
-                        </Button >
+                        <Link to={`/projects/${projectId}/review`}>
+                            <Button icon={<FileSearchOutlined />} type="primary">Review Papers</Button>
+                        </Link>
                     </Space >
                 }
             >
