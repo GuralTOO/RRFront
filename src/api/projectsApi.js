@@ -1,3 +1,4 @@
+import { date } from 'zod';
 import { supabase } from '../supabaseClient';
 import { massUpdateRelevancyScores } from './papersApi';
 
@@ -42,7 +43,7 @@ export async function getUserProjects() {
             researchQuestion: project.research_question,
             papers: paperCount,
             role: project.user_projects[0].role,
-            progress: 0 // Placeholder, calculate this based on your logic
+            date: new Date(project.created_at).toLocaleDateString(),
         };
     });
 }

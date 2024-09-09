@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Avatar, Progress, Row, Col, Typography, Tooltip } from 'antd';
-import { EditOutlined, DeleteOutlined, BarChartOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, BarChartOutlined, CalendarOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getUserProjects, createNewProject } from '../../../api/projectsApi';
 import CreateProjectModal from './Project/CreateProjectModal';
@@ -59,7 +59,8 @@ const AllProjects = () => {
                             onClick={() => handleCardClick(project.id)}
                             cover={
                                 <div className="card-cover">
-                                    <Progress type="circle" percent={project.progress} size={80} />
+                                    <CalendarOutlined style={{ fontSize: '24px', color: '#fff' }} />
+                                    <span className="project-date">{project.date}</span>
                                 </div>
                             }
                             actions={[
