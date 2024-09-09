@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Home, FolderOpen, FileText, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ConfigProvider, Tooltip } from 'antd';
 import './Navigation2.css';
+import logoImage from '/src/assets/RR_logo.png';
 
 const NavItem = ({ to, icon: Icon, label, isActive, collapsed }) => (
     <Tooltip title={collapsed ? label : ''} placement="right">
@@ -38,7 +39,7 @@ const Navigation2 = ({ session }) => {
                 {/* Sidebar */}
                 <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
                     <div className="sidebar-header">
-                        <img src="/src/assets/RR_logo.png" alt="Logo" className="logo" />
+                        <img src={logoImage} alt="Logo" className="logo" />
                         {!collapsed && <h1 className="app-name">RapidReview</h1>}
                     </div>
                     <nav>
