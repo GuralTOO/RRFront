@@ -197,7 +197,7 @@ const ProjectDetails = () => {
                             <Tag icon={<UserOutlined />} color="blue">{userRole}</Tag>
                         </Tooltip>
                         <Tooltip title="Project Progress">
-                            <Progress type="circle" percent={project.progress} size={80} />
+                            {/* <Progress type="circle" percent={project.progress} size={80} /> */}
                         </Tooltip>
                         <Link to={`/projects/${projectId}/review`}>
                             <Button icon={<FileSearchOutlined />} type="primary">Review Papers</Button>

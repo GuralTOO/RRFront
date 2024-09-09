@@ -21,7 +21,7 @@ export async function getUnreviewedPapers(projectId, orderBy = 'created_at', asc
     let query = supabase
         .from('project_papers')
         .select(`
-      papers!inner(
+        papers!inner(
         paper_id,
         title,
         abstract,
