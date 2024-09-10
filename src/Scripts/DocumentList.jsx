@@ -3,7 +3,7 @@ import DocumentRow from './DocumentRow';
 import { getFilteredPapers } from '@/api/papersApi';
 import AddPaperModal from './Experiment/pages/Project/AddPaperModal';
 import { addPaper } from '@/api/papersApi';
-import { Spin, Typography } from 'antd';
+import { Spin } from 'antd';
 import {
     Select, SelectTrigger,
     SelectContent, SelectItem, SelectValue,
@@ -21,7 +21,8 @@ import {
     PaginationNext,
     PaginationPrevious
 } from "@/components/ui/pagination";
-const { Title, Paragraph, Text } = Typography;
+import CsvUploadModal from './Experiment/pages/Project/CsvUploadModal';
+import { Button } from "@/components/ui/button";
 
 const DocumentList = ({ projectId }) => {
     const [sortConfig, setSortConfig] = useState({ field: 'created_at', ascending: false });
@@ -116,6 +117,9 @@ const DocumentList = ({ projectId }) => {
     };
 
     const totalPages = Math.ceil(totalDocuments / pageSize);
+    const handleCsvUploadComplete = () => {
+        fetchDocuments(currentPage);
+    };
 
     if (error) return <div className="text-red-500">Error: {error}</div>;
 
@@ -123,8 +127,12 @@ const DocumentList = ({ projectId }) => {
         <div className="space-y-4">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-2xl font-semibold">Affiliated Papers</h3>
-                <AddPaperModal onAddPaper={handleAddPaper} />
+                <div className="space-x-2">
+                    <AddPaperModal onAddPaper={handleAddPaper} />
+                    <CsvUploadModal projectId={projectId} onUploadComplete={handleCsvUploadComplete} />
+                </div>
             </div>
+
 
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center space-x-2">

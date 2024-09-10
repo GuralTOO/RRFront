@@ -248,3 +248,45 @@ export async function addPaperToDatabase(paperData, projectId, relevancyScore = 
         created_at: new Date().toISOString()
     };
 }
+
+export const uploadCsvFile = async (file, projectId) => {
+    try {
+        // Get the current user's session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+
+        if (!session) {
+            throw new Error('No active session. User must be authenticated.');
+        }
+
+        // Upload file to Supabase storage
+        const { data, error } = await supabase.storage
+            .from('csv-uploads')
+            .upload(`${projectId}/${file.name}`, file);
+
+        if (error) throw error;
+
+        // Get the public URL of the uploaded file
+        // const { data: { publicUrl }, error: urlError } = supabase.storage
+        //     .from('csv-uploads')
+        //     .getPublicUrl(`${projectId}/${file.name}`);
+
+        // if (urlError) throw urlError;
+        // console.log('Public URL:', publicUrl);
+
+        // // Call the edge function to process the CSV
+        // const { data: functionData, error: functionError } = await supabase.functions.invoke('process-csv', {
+        //     body: JSON.stringify({
+        //         fileUrl: publicUrl,
+        //         projectId: projectId
+        //     })
+        // });
+
+        // if (functionError) throw functionError;
+
+        // return { jobId: functionData.jobId };
+    } catch (error) {
+        console.error('Error in uploadCsvFile:', error);
+        throw error;
+    }
+};

@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Home, FolderOpen, FileText, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ConfigProvider, Tooltip } from 'antd';
 import './Navigation2.css';
-import logoImage from '/src/assets/rapidreview-lucide-zap-logo.svg';
+import logoImage from '/src/assets/RR_logo.png';
 
 const NavItem = ({ to, icon: Icon, label, isActive, collapsed }) => (
     <Tooltip title={collapsed ? label : ''} placement="right">
