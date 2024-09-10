@@ -19,6 +19,7 @@ import AllPapers from './Scripts/Experiment/pages/AllPapers';
 import UserSettingsPage from './Scripts/Settings/UserSettingsPage';
 import ProjectDetails from './Scripts/Experiment/pages/Project/ProjectDetails';
 import TinderForAbstracts from './Scripts/Experiment/pages/Project/Tinder/TinderForAbstracts';
+import InterestForm from './Scripts/InterestForm/InterestForm';
 
 
 function App() {
@@ -62,7 +63,8 @@ function App() {
     <div className="App">
       <Routes>
         <Route path="/" element={<LandingPage5 />} />
-        <Route path="/login" element={<Auth />} />
+        <Route path="/hiddenlogin" element={<Auth />} />
+        <Route path="/login" element={<InterestForm />} />
         {session ? (
           <Route path="/*" element={<Navigation2 session={session} />}>
             <Route path="dashboard" element={<Dashboard3 />} />
