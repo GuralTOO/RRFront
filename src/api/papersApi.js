@@ -209,15 +209,29 @@ export async function calculateRelevancyScore(paperId, projectId) {
 }
 
 export async function massUpdateRelevancyScores(projectId) {
-    // Fetch all the papers for the project
-    const { data: papers, error: papersError } = await supabase
-        .from('project_papers')
-        .select('paper_id')
-        .eq('project_id', projectId);
-    // Call the supabase cloud function to calculate the relevancy score using the pairs of paper_id and project_id
-    papers.forEach(async (paper) => {
-        await calculateRelevancyScore(paper.paper_id, projectId);
-    });
+
+    const { data, error } = await supabase
+        .rpc('reset_project_relevancy_scores', { project_uuid: projectId });
+
+    if (error) {
+        console.error('Error calling reset_project_relevancy_scores:', error);
+        throw error;
+    }
+
+    const { invoke_data, invoke_error } = await supabase.functions.invoke('trigger-gcp-batch-scoring',
+        {
+            body: {
+                projectId: projectId
+            },
+        })
+
+    if (invoke_error) {
+        console.error('Error calling trigger-gcp-batch-scoring:', invoke_error);
+        throw invoke_error;
+    }
+
+
+
 }
 
 // Calls the Supabase stored procedure to add a paper to the papers table and then to the project table
@@ -259,32 +273,44 @@ export const uploadCsvFile = async (file, projectId) => {
             throw new Error('No active session. User must be authenticated.');
         }
 
+        const filePath = `${projectId}/${file.name}`;
+
+
         // Upload file to Supabase storage
         const { data, error } = await supabase.storage
             .from('csv-uploads')
-            .upload(`${projectId}/${file.name}`, file);
+            .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false
+            });
 
-        if (error) throw error;
+        if (error) {
+            console.error('Error uploading file:', error);
+            console.error('Error details:', JSON.stringify(error, null, 2));
+            throw error;
+        }
 
-        // Get the public URL of the uploaded file
-        // const { data: { publicUrl }, error: urlError } = supabase.storage
-        //     .from('csv-uploads')
-        //     .getPublicUrl(`${projectId}/${file.name}`);
+        console.log('File uploaded successfully:', data);
+        console.log('The file has been uploaded to path:', filePath);
 
-        // if (urlError) throw urlError;
-        // console.log('Public URL:', publicUrl);
+        // Call the edge function to process the CSV
+        const { data: functionData, error: functionError } = await supabase.functions.invoke('process-csv', {
+            body: JSON.stringify({
+                projectId: projectId,
+                bucket: 'csv-uploads',
+                filePath: filePath,
+            })
+        });
 
-        // // Call the edge function to process the CSV
-        // const { data: functionData, error: functionError } = await supabase.functions.invoke('process-csv', {
-        //     body: JSON.stringify({
-        //         fileUrl: publicUrl,
-        //         projectId: projectId
-        //     })
-        // });
+        if (functionError) {
+            console.error('Error calling process-csv:', functionError);
+            throw functionError;
+        }
 
-        // if (functionError) throw functionError;
+        // log success if the function was called successfully
+        console.log('Function call successful:', functionData);
+        return functionData;
 
-        // return { jobId: functionData.jobId };
     } catch (error) {
         console.error('Error in uploadCsvFile:', error);
         throw error;

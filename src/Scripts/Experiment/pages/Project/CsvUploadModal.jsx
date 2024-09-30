@@ -94,8 +94,8 @@ const CsvUploadModal = ({ projectId, onUploadComplete }) => {
                         <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
                         <Button
                             onClick={handleUpload}
-                            // disabled={!file || uploading}
-                            disabled={true}
+                            disabled={!file || uploading}
+                        // disabled={true}
                         >
                             {uploading ? 'Uploading...' : 'Upload CSV'}
                         </Button>
