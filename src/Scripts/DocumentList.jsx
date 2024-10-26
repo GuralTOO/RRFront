@@ -34,6 +34,8 @@ const DocumentList = ({ projectId }) => {
     const [expandedIndex, setExpandedIndex] = useState(null);
     const pageSize = 50;
 
+
+
     const fetchDocuments = async (page = 1) => {
         setIsLoading(true);
         setError(null);
@@ -115,7 +117,33 @@ const DocumentList = ({ projectId }) => {
         setExpandedIndex(expandedIndex === index ? null : index);
     };
 
-    const totalPages = Math.ceil(totalDocuments / pageSize);
+    // Calculate pagination values
+    const totalPages = Math.max(1, Math.ceil(totalDocuments / pageSize));
+    const showPagination = totalDocuments > pageSize;
+    const visiblePageNumbers = [];
+
+    // Calculate which page numbers to show
+    if (totalPages <= 7) {
+        // If 7 or fewer pages, show all
+        for (let i = 1; i <= totalPages; i++) {
+            visiblePageNumbers.push(i);
+        }
+    } else {
+        // Always include first page, last page, current page, and pages around current
+        const current = currentPage;
+        const pages = new Set([1, totalPages, current]);
+
+        // Add one page before and after current page
+        if (current - 1 > 1) pages.add(current - 1);
+        if (current + 1 < totalPages) pages.add(current + 1);
+
+        // Add one more page on each side if space allows
+        if (current - 2 > 1) pages.add(current - 2);
+        if (current + 2 < totalPages) pages.add(current + 2);
+
+        visiblePageNumbers.push(...Array.from(pages).sort((a, b) => a - b));
+    }
+
     const handleCsvUploadComplete = () => {
         fetchDocuments(currentPage);
     };
@@ -199,32 +227,59 @@ const DocumentList = ({ projectId }) => {
                             ))}
                         </TableBody>
                     </Table>
-                    <Pagination>
-                        <PaginationContent>
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    onClick={() => handlePageChange(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                />
-                            </PaginationItem>
-                            {[...Array(totalPages)].map((_, i) => (
-                                <PaginationItem key={i}>
-                                    <PaginationLink
-                                        onClick={() => handlePageChange(i + 1)}
-                                        isActive={currentPage === i + 1}
-                                    >
-                                        {i + 1}
-                                    </PaginationLink>
+                    {!isLoading && showPagination && (
+                        <Pagination>
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                                    />
                                 </PaginationItem>
-                            ))}
-                            <PaginationItem>
-                                <PaginationNext
-                                    onClick={() => handlePageChange(currentPage + 1)}
-                                    disabled={currentPage === totalPages}
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
+
+                                {visiblePageNumbers.map((pageNum, index) => {
+                                    // Add ellipsis if there's a gap
+                                    if (index > 0 && pageNum - visiblePageNumbers[index - 1] > 1) {
+                                        return (
+                                            <React.Fragment key={`ellipsis-${pageNum}`}>
+                                                <PaginationItem>
+                                                    <span className="px-4 py-2">...</span>
+                                                </PaginationItem>
+                                                <PaginationItem>
+                                                    <PaginationLink
+                                                        onClick={() => handlePageChange(pageNum)}
+                                                        isActive={currentPage === pageNum}
+                                                    >
+                                                        {pageNum}
+                                                    </PaginationLink>
+                                                </PaginationItem>
+                                            </React.Fragment>
+                                        );
+                                    }
+
+                                    return (
+                                        <PaginationItem key={pageNum}>
+                                            <PaginationLink
+                                                onClick={() => handlePageChange(pageNum)}
+                                                isActive={currentPage === pageNum}
+                                            >
+                                                {pageNum}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    );
+                                })}
+
+                                <PaginationItem>
+                                    <PaginationNext
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={currentPage >= totalPages}
+                                        className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    )}
                 </>
             )}
         </div>
