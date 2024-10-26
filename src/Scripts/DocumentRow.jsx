@@ -113,6 +113,9 @@ const DocumentRow = ({ doc, index, expandedIndex, toggleExpand }) => {
                         <span className="text-sm text-gray-500">{doc.relevancy_score}</span>
                     </div>
                 </TableCell>
+                <TableCell className="w-1/6">
+                    {doc.review_decision}
+                </TableCell>
                 <TableCell className="w-12 text-right">
                     <Button
                         variant="ghost"

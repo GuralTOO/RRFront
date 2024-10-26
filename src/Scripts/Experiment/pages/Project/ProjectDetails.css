@@ -68,3 +68,45 @@
     font-size: 14px;
     padding: 4px 8px;
 }
+
+.project-details-card {
+    height: 520px;
+    /* Adjust this value as needed */
+}
+
+.project-details-card .card-content {
+    height: calc(100% - 60px);
+    /* Adjust 60px if your card header height differs */
+}
+
+.project-details-card .tab-content {
+    height: calc(100% - 40px);
+    /* Adjust 40px if your tabs height differs */
+    overflow-y: auto;
+}
+
+/* Ensure all tab contents have the same padding */
+.project-details-card .tab-content>div {
+    padding: 16px;
+}
+
+/* Left-align tabs */
+.project-tabs .project-tabs-list {
+    justify-content: flex-start;
+    border-bottom: 1px solid #e8e8e8;
+    margin-bottom: 16px;
+}
+
+.project-tabs .project-tabs-list button {
+    margin-right: 24px;
+}
+
+/* Remove default shadcn/ui tab styles if they interfere */
+.project-tabs .project-tabs-list button[data-state="active"] {
+    border-bottom: 2px solid #1890ff;
+    color: #1890ff;
+}
+
+.project-tabs .project-tabs-list button:hover {
+    color: #40a9ff;
+}

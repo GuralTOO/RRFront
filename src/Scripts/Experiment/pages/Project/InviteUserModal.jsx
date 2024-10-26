@@ -40,6 +40,8 @@ const InviteUserModal = ({ onInviteUser }) => {
         setRole('');
     };
 
+    console.log('InviteUserModal render');
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>

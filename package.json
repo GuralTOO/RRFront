@@ -21,6 +21,8 @@
     "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-tabs": "^1.1.1",
+    "@radix-ui/react-toast": "^1.2.2",
     "@supabase/supabase-js": "^2.45.1",
     "antd": "^5.19.4",
     "class-variance-authority": "^0.7.0",

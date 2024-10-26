@@ -1,6 +1,21 @@
 import { supabase } from "@/supabaseClient";
 import { add } from "date-fns";
 
+
+export async function getPaperDetails(paperId) {
+    const { data, error } = await supabase
+        .from('papers')
+        .select('*')
+        .eq('paper_id', paperId)
+        .single();
+    if (error) {
+        console.error('Error fetching paper:', error);
+        throw error;
+    }
+
+    return data;
+}
+
 export async function getUnreviewedPapers(projectId, orderBy = 'created_at', ascending = true, page = 1, pageSize = 50) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('No user logged in');
@@ -108,6 +123,8 @@ export async function getFilteredPapers(projectId, filterDecision = 'all', order
         paper_id
       `, { count: 'exact' })
         .eq('project_id', projectId);
+
+
 
     // Handle ordering
     if (orderBy === 'title' || orderBy === 'publication_date') {
