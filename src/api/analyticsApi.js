@@ -119,41 +119,16 @@ async function getConflictStats(projectId) {
  * Export project data
  */
 export async function exportProjectData(projectId) {
-    const { data: papers, error } = await supabase
-        .from('papers')
-        .select(`
-            title,
-            abstract,
-            authors,
-            publication_date,
-            doi,
-            project_papers!inner(
-                relevancy_score,
-                comments,
-                project_id
-            ),
-            paper_reviews(
-                decision,
-                review_date,
-                reviewer_id
-            )
-        `)
-        .eq('project_papers.project_id', projectId);
+    try {
+        const { data, error } = await supabase.functions.invoke('export-project-papers', {
+            body: { project_id: projectId }
+        });
 
-    if (error) throw error;
+        if (error) throw error;
 
-    // Transform data for export
-    return papers.map(paper => ({
-        title: paper.title,
-        authors: paper.authors?.join('; ') || '',
-        publicationDate: paper.publication_date,
-        doi: paper.doi,
-        relevancyScore: paper.project_papers[0].relevancy_score,
-        comments: paper.project_papers[0].comments,
-        reviews: paper.paper_reviews.map(review => ({
-            reviewerId: review.reviewer_id,
-            decision: review.decision,
-            date: review.review_date
-        }))
-    }));
+        return data;
+    } catch (error) {
+        console.error('Error in exportProjectData:', error);
+        throw error;
+    }
 }

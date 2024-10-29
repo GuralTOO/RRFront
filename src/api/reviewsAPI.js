@@ -1,56 +1,113 @@
 import { supabase } from "@/supabaseClient";
-import { getPaperDetails } from "./papersApi";
 
 export async function addReview(projectId, paperId, decision) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('No user logged in');
 
     console.log(`Adding review for paper ${paperId} in project ${projectId} by user ${user.id}. Decision: ${decision}`);
+
     // enforce that the review is one of the allowed values
     if (!['accept', 'reject', 'skip'].includes(decision)) {
         throw new Error('Invalid review value');
     }
 
+    // Add the review
     const { data, error } = await supabase
         .from('paper_reviews')
-        .insert({ project_id: projectId, paper_id: paperId, reviewer_id: user.id, decision: decision }).select('review_id');
+        .insert({
+            project_id: projectId,
+            paper_id: paperId,
+            reviewer_id: user.id,
+            decision: decision,
+            review_date: new Date().toISOString()
+        })
+        .select('review_id');
 
     if (error) {
         console.error('Error adding review:', error);
         throw new Error('Failed to add review');
     }
+
     const review_id = data[0].review_id;
 
-    // call the rpc function to see if the review causes a conflict
-    const { data: conflictData, error: conflictError } = await supabase.rpc('check_for_conflict', { p_review_id: review_id });
+    // Check for conflicts
+    const { data: conflictData, error: conflictError } = await supabase
+        .rpc('check_for_conflict', { p_review_id: review_id });
+
     if (conflictError) {
         console.error('Error checking review conflict:', conflictError);
         throw new Error('Failed to check review conflict');
     }
-    console.log('Conflict data:', conflictData);
 
+    // Handle the case where conflictData is an array with one element
+    const hasConflict = conflictData[0]?.has_conflict ?? false;
+
+    // If no conflict, try to create consensus decision
+    if (!hasConflict) {
+        const { data: decisionData, error: decisionError } = await supabase
+            .rpc('try_create_consensus_decision', {
+                p_project_id: projectId,
+                p_paper_id: paperId
+            });
+
+        if (decisionError) {
+            console.error('Error creating decision:', decisionError);
+            // Don't throw here - the review was still added successfully
+        }
+    }
+
+    return {
+        review_id: review_id,
+        has_conflict: hasConflict,
+        conflict_id: conflictData[0]?.conflict_id
+    };
 }
 
 export async function resolveConflict(conflict_id, resolution) {
-    // get the uuid of the current user
 
+    // get the uuid of the current user
     console.log(`Resolving conflict ${conflict_id} with resolution ${resolution}`);
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError) throw userError;
     if (!user) throw new Error('No user logged in');
 
-    console.log('User:', user);
+    // Get conflict details first
+    const { data: conflictData, error: conflictError } = await supabase
+        .from('conflicts')
+        .select('project_id, paper_id')
+        .eq('conflict_id', conflictId)
+        .single();
+
+    if (conflictError) {
+        console.error('Error getting conflict:', conflictError);
+        throw new Error('Failed to get conflict details');
+    }
+
     // update the conflicts table with the resolution
-    const { data, error } = await supabase
+    const { error: updateError } = await supabase
         .from('conflicts')
         .update({ resolution: resolution, resolver_id: user.id })
         .eq('conflict_id', conflict_id);
 
-    if (error) {
-        console.error('Error resolving conflict:', error);
-        throw error;
+    if (updateError) {
+        console.error('Error updating conflict:', updateError);
+        throw new Error('Failed to update conflict');
     }
-    return data;
+
+    // Create decision based on resolution
+    const { data: decisionData, error: decisionError } = await supabase
+        .rpc('create_resolution_decision', {
+            p_project_id: conflictData.project_id,
+            p_paper_id: conflictData.paper_id,
+            p_resolution: resolution
+        });
+
+    if (decisionError) {
+        console.error('Error creating decision:', decisionError);
+        throw new Error('Failed to create decision');
+    }
+
+    return decisionData;
 }
 
 export async function getConflictPaper() {

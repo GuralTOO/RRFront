@@ -1,5 +1,4 @@
 import { supabase } from "@/supabaseClient";
-import { add } from "date-fns";
 
 
 export async function getPaperDetails(paperId) {
@@ -90,96 +89,6 @@ export async function getUnreviewedPapers(projectId, orderBy = 'created_at', asc
         totalCount: count - reviewedPaperIds.size
     };
 }
-
-// export async function getFilteredPapers(projectId, filterDecision = 'all', orderBy = 'created_at', ascending = true, page = 1, pageSize = 50) {
-//     const { data: { user } } = await supabase.auth.getUser();
-//     if (!user) throw new Error('No user logged in');
-
-//     console.log("Getting filtered papers for project", projectId, "with decision", filterDecision);
-//     console.log("Order by:", orderBy, ascending ? 'ASC' : 'DESC');
-
-//     const validOrderColumns = ['created_at', 'title', 'relevancy_score', 'publication_date'];
-//     if (!validOrderColumns.includes(orderBy)) {
-//         console.log("Received invalid order column: ", orderBy);
-//         throw new Error('Invalid order column');
-//     }
-
-//     const from = (page - 1) * pageSize;
-//     const to = from + pageSize - 1;
-
-//     let query = supabase
-//         .from('project_papers')
-//         .select(`
-//         papers!inner(
-//           paper_id,
-//           title,
-//           abstract,
-//           authors,
-//           publication_date,
-//           full_text_url
-//         ),
-//         relevancy_score,
-//         created_at,
-//         paper_id
-//       `, { count: 'exact' })
-//         .eq('project_id', projectId);
-
-
-
-//     // Handle ordering
-//     if (orderBy === 'title' || orderBy === 'publication_date') {
-//         query = query.order(`papers.${orderBy}`, { ascending: ascending });
-//     } else {
-//         query = query.order(orderBy, { ascending: ascending });
-//     }
-
-//     // Apply pagination
-//     query = query.range(from, to);
-
-//     const { data: projectPapers, error: papersError, count } = await query;
-//     if (papersError) throw papersError;
-
-//     // Fetch review decisions for these papers
-//     const paperIds = projectPapers.map(pp => pp.paper_id);
-//     const { data: reviews, error: reviewsError } = await supabase
-//         .from('paper_reviews')
-//         .select('paper_id, decision')
-//         .eq('reviewer_id', user.id)
-//         .eq('project_id', projectId)
-//         .in('paper_id', paperIds);
-
-//     if (reviewsError) throw reviewsError;
-
-//     // Create a map of paper_id to review decision
-//     const reviewDecisionMap = reviews.reduce((map, review) => {
-//         map[review.paper_id] = review.decision;
-//         return map;
-//     }, {});
-
-//     // Combine paper data with review decision and apply filter
-//     const filteredPapers = projectPapers.map(item => ({
-//         ...item.papers,
-//         relevancy_score: item.relevancy_score,
-//         created_at: item.created_at,
-//         review_decision: reviewDecisionMap[item.paper_id] || 'unreviewed'
-//     })).filter(paper => {
-//         if (filterDecision === 'all') {
-//             return true; // Include all papers
-//         } else if (filterDecision === 'unreviewed') {
-//             return paper.review_decision === 'unreviewed';
-//         } else {
-//             return paper.review_decision === filterDecision;
-//         }
-//     });
-
-//     console.log('Filtered papers:', filteredPapers);
-
-//     return {
-//         data: filteredPapers,
-//         totalCount: filteredPapers.length
-//     };
-// }
-
 
 
 
