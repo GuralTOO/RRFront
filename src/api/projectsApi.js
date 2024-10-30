@@ -222,3 +222,30 @@ export async function inviteUserToProject(projectId, email, role) {
     return data[0];
 }
 
+export async function fetchProjectUsers(projectId) {
+    console.log('Fetching project users for project:', projectId);
+    const { data, error } = await supabase
+        .from('user_projects')
+        .select(`
+        user_id,
+        role,
+        created_at,
+        profiles!inner (
+          username
+        )
+      `)
+        .eq('project_id', projectId)
+        .order('created_at');
+
+    if (error) {
+        console.error('Error fetching project users:', error);
+        throw new Error('Failed to fetch project users');
+    }
+
+    return data.map((user, index) => ({
+        id: index + 1, // Use an integer as the id
+        email: user.profiles.username, // username is actually email in your case
+        role: user.role,
+        joinedAt: user.created_at
+    }));
+}

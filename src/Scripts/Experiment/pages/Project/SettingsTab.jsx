@@ -19,6 +19,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { getUserRole } from '@/api/projectsApi';
+import { fetchProjectUsers, inviteUserToProject } from '@/api/projectsApi';
 
 const SettingsTab = ({ projectId }) => {
     const [userRole, setUserRole] = useState(null);
@@ -30,7 +31,7 @@ const SettingsTab = ({ projectId }) => {
             try {
                 const role = await getUserRole(projectId);
                 setUserRole(role);
-                await fetchProjectUsers();
+                await _fetchProjectUsers();
             } catch (error) {
                 console.error('Error fetching data:', error);
             } finally {
@@ -40,14 +41,9 @@ const SettingsTab = ({ projectId }) => {
         fetchData();
     }, [projectId]);
 
-    const fetchProjectUsers = async () => {
-        // TODO: Replace with actual API call
-        const mockUsers = [
-            { id: 1, email: 'admin@example.com', role: 'admin', joinedAt: '2024-01-01' },
-            { id: 2, email: 'senior@example.com', role: 'senior', joinedAt: '2024-01-02' },
-            { id: 3, email: 'researcher@example.com', role: 'researcher', joinedAt: '2024-01-03' },
-        ];
-        setProjectUsers(mockUsers);
+    const _fetchProjectUsers = async () => {
+        const users = await fetchProjectUsers(projectId);
+        setProjectUsers(users);
     };
 
 
@@ -55,7 +51,7 @@ const SettingsTab = ({ projectId }) => {
         try {
             console.log('Inviting user:', email, role);
             await inviteUserToProject(projectId, email, role);
-            await fetchProjectUsers();
+            await _fetchProjectUsers();
         } catch (error) {
             console.error('Error inviting user:', error);
             // You might want to add proper error handling here
