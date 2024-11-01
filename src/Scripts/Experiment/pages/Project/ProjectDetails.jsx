@@ -263,7 +263,7 @@ const ProjectDetails = () => {
     const [error, setError] = useState(null);
     const [userRole, setUserRole] = useState(null);
 
-    const isAdmin = userRole === 'admin';
+    const canEdit = (userRole === 'admin' || userRole === 'senior');
 
     useEffect(() => {
         async function fetchProjectDetails() {
@@ -333,7 +333,7 @@ const ProjectDetails = () => {
                                 <ProjectDetailsCard
                                     project={project}
                                     setProject={setProject}
-                                    isAdmin={isAdmin}
+                                    canEdit={canEdit}
                                 />
                             </TabsContent>
                             <TabsContent value="conflicts">

@@ -103,18 +103,18 @@ import { editProject } from '@/api/projectsApi';
 
 const { Paragraph } = Typography;
 
-const ProjectDetailsCard = ({ project, setProject, isAdmin }) => {
+const ProjectDetailsCard = ({ project, setProject, canEdit }) => {
     const [editing, setEditing] = useState(null);
     const [editValue, setEditValue] = useState('');
 
     const handleEdit = (field, value) => {
-        if (!isAdmin) return;
+        if (!canEdit) return;
         setEditing(field);
         setEditValue(field === 'keywords' ? (value || []).join(', ') : value);
     };
 
     const handleSave = async () => {
-        if (!isAdmin) return;
+        if (!canEdit) return;
         const newValue = editing === 'keywords' ? editValue.split(',').map(k => k.trim()).filter(k => k !== '') : editValue;
         try {
             await editProject(project.id, editing, newValue);
@@ -173,7 +173,7 @@ const ProjectDetailsCard = ({ project, setProject, isAdmin }) => {
                         ) : (
                             <p className="text-gray-700">{value}</p>
                         )}
-                        {isAdmin && (
+                        {canEdit && (
                             <Button
                                 icon={<EditOutlined />}
                                 onClick={() => handleEdit(field, value)}
