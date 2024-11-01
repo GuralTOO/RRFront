@@ -129,7 +129,7 @@ export async function editProject(projectId, field, value) {
 
     if (userProjectError) throw new Error(`Error checking project: ${userProjectError.message}`);
     if (!userProject) throw new Error('Project not found or user does not have access');
-    if (userProject.role !== 'admin') throw new Error('User does not have permission to edit this project');
+    if (userProject.role !== 'admin' && userProject.role !== 'senior') throw new Error('User does not have permission to edit this project');
 
     // Validate and map the field
     const dbField = FIELD_MAP[field] || field;
