@@ -116,7 +116,7 @@ const SettingsTab = ({ projectId }) => {
                                         {new Date(user.joinedAt).toLocaleDateString()}
                                     </TableCell>
                                     <TableCell>
-                                        {userRole === 'admin' || (userRole === 'senior' && user.role === 'researcher') ? (
+                                        {userRole === 'admin' || (userRole === 'senior' && user.role === 'reviewer') ? (
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
@@ -145,19 +145,19 @@ const SettingsTab = ({ projectId }) => {
                         <div className="space-y-2">
                             <h4 className="font-medium">Admin</h4>
                             <p className="text-sm text-gray-500">
-                                Can manage all aspects of the project, including managing users and their roles
+                                Can manage all aspects of the project, including managing users and their roles.
                             </p>
                         </div>
                         <div className="space-y-2">
-                            <h4 className="font-medium">Senior Researcher</h4>
+                            <h4 className="font-medium">Senior Reviewer</h4>
                             <p className="text-sm text-gray-500">
-                                Can invite researchers and resolve conflicts, but cannot manage admins or other senior researchers
+                                Can change the research question and keywords, resolve conflicts, and invite reviewers or senior reviewers to the project.
                             </p>
                         </div>
                         <div className="space-y-2">
-                            <h4 className="font-medium">Researcher</h4>
+                            <h4 className="font-medium">Reviewer</h4>
                             <p className="text-sm text-gray-500">
-                                Can review papers and participate in the systematic review process
+                                Can review papers and add new papers to the project.
                             </p>
                         </div>
                     </div>
