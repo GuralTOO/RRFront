@@ -1,111 +1,24 @@
-// import React, { useState } from 'react';
-// import { Space, Button, Input, Tag, Typography } from 'antd';
-// import { EditOutlined, QuestionCircleOutlined, TagsOutlined } from '@ant-design/icons';
-// import { Textarea } from "@/components/ui/textarea";
-// import { editProject } from '@/api/projectsApi';
-
-// const { Title, Paragraph } = Typography;
-
-// const ProjectDetailsCard = ({ project, setProject, isAdmin }) => {
-//     const [editing, setEditing] = useState(null);
-//     const [editValue, setEditValue] = useState('');
-
-//     const handleEdit = (field, value) => {
-//         if (!isAdmin) return;
-//         setEditing(field);
-//         setEditValue(field === 'keywords' ? (value || []).join(', ') : value);
-//     };
-
-//     const handleSave = async () => {
-//         if (!isAdmin) return;
-//         const newValue = editing === 'keywords' ? editValue.split(',').map(k => k.trim()).filter(k => k !== '') : editValue;
-//         try {
-//             await editProject(project.id, editing, newValue);
-//             setProject(prev => ({ ...prev, [editing]: newValue }));
-//             setEditing(null);
-//         } catch (error) {
-//             console.error('Error saving changes:', error);
-//             // Handle error (e.g., show an error message to the user)
-//         }
-//     };
-
-//     const handleCancel = () => {
-//         setEditing(null);
-//     };
-
-//     const renderEditableField = (field, value, icon) => (
-//         <div className="editable-field">
-//             {editing === field ? (
-//                 <Space direction="vertical" style={{ width: '100%' }}>
-//                     {field === 'keywords' ? (
-//                         <Input
-//                             value={editValue}
-//                             onChange={(e) => setEditValue(e.target.value)}
-//                             placeholder="Enter keywords separated by commas"
-//                         />
-//                     ) : (
-//                         <Textarea
-//                             value={editValue}
-//                             onChange={(e) => setEditValue(e.target.value)}
-//                             placeholder={`Enter ${field}`}
-//                             rows={4}
-//                         />
-//                     )}
-//                     <Space>
-//                         <Button onClick={handleSave} type="primary">Save</Button>
-//                         <Button onClick={handleCancel}>Cancel</Button>
-//                     </Space>
-//                 </Space>
-//             ) : (
-//                 <Space direction="vertical" style={{ width: '100%' }}>
-//                     <Space align="start">
-//                         {icon}
-//                         {field === 'keywords' ? (
-//                             <div>
-//                                 {(value || []).map((keyword, index) => (
-//                                     <Tag key={index} color="blue" style={{ marginBottom: '8px' }}>{keyword}</Tag>
-//                                 ))}
-//                                 {(value || []).length === 0 && <Paragraph type="secondary">No keywords set</Paragraph>}
-//                             </div>
-//                         ) : (
-//                             <Paragraph>{value}</Paragraph>
-//                         )}
-//                     </Space>
-//                     {isAdmin && (
-//                         <Button icon={<EditOutlined />} onClick={() => handleEdit(field, value)} type="link">
-//                             Edit
-//                         </Button>
-//                     )}
-//                 </Space>
-//             )}
-//         </div>
-//     );
-
-//     return (
-//         <Space direction="vertical" size="large" style={{ width: '100%' }}>
-//             {renderEditableField('researchQuestion', project.researchQuestion, <QuestionCircleOutlined />)}
-//             {renderEditableField('keywords', project.keywords, <TagsOutlined />)}
-//             <Paragraph>
-//                 <strong>Number of Papers:</strong> {project.papers}
-//             </Paragraph>
-//         </Space>
-//     );
-// };
-
-// export default ProjectDetailsCard;
-
-
 import React, { useState } from 'react';
 import { Button, Input, Tag, Space, Typography } from 'antd';
 import { EditOutlined, QuestionCircleOutlined, TagsOutlined } from '@ant-design/icons';
 import { Textarea } from "@/components/ui/textarea";
-import { editProject } from '@/api/projectsApi';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const { Paragraph } = Typography;
 
 const ProjectDetailsCard = ({ project, setProject, canEdit }) => {
     const [editing, setEditing] = useState(null);
     const [editValue, setEditValue] = useState('');
+    const [showSaveDialog, setShowSaveDialog] = useState(false);
 
     const handleEdit = (field, value) => {
         if (!canEdit) return;
@@ -113,8 +26,7 @@ const ProjectDetailsCard = ({ project, setProject, canEdit }) => {
         setEditValue(field === 'keywords' ? (value || []).join(', ') : value);
     };
 
-    const handleSave = async () => {
-        if (!canEdit) return;
+    const handleSaveConfirmed = async () => {
         const newValue = editing === 'keywords' ? editValue.split(',').map(k => k.trim()).filter(k => k !== '') : editValue;
         try {
             await editProject(project.id, editing, newValue);
@@ -123,6 +35,11 @@ const ProjectDetailsCard = ({ project, setProject, canEdit }) => {
         } catch (error) {
             console.error('Error saving changes:', error);
         }
+        setShowSaveDialog(false);
+    };
+
+    const handleSave = () => {
+        setShowSaveDialog(true);
     };
 
     const handleCancel = () => {
@@ -206,6 +123,21 @@ const ProjectDetailsCard = ({ project, setProject, canEdit }) => {
             <Paragraph>
                 <strong>Number of Papers:</strong> {project.papers}
             </Paragraph>
+
+            <AlertDialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Changes</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Saving these changes will trigger a recalculation of relevancy scores for all papers in this project. This process may take some time. Do you want to continue?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setShowSaveDialog(false)}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleSaveConfirmed}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 };
