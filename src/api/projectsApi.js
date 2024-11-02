@@ -249,3 +249,91 @@ export async function fetchProjectUsers(projectId) {
         joinedAt: user.created_at
     }));
 }
+
+
+// TODO: FIX THE FUNCTIONs BELOW, change them to real ones. For now, they return fake data.
+// In /api/projectsApi.ts
+
+export const getExclusionCriteria = async (projectId) => {
+    // Normally this would fetch from the database, but for testing:
+    return [
+        {
+            criteria_id: "ec1",
+            project_id: projectId,
+            criterion_text: "Wrong study population (e.g., non-human subjects)"
+        },
+        {
+            criteria_id: "ec2",
+            project_id: projectId,
+            criterion_text: "Incorrect study design (e.g., not a randomized controlled trial)"
+        },
+        {
+            criteria_id: "ec3",
+            project_id: projectId,
+            criterion_text: "Insufficient data reported"
+        },
+        {
+            criteria_id: "ec4",
+            project_id: projectId,
+            criterion_text: "Publication type not eligible (e.g., conference abstract)"
+        }
+    ];
+};
+
+export const getNextPaperForFullTextReview = async (projectId) => {
+    // This is a sample return format matching what we need for the UI
+    const { data: folders, error: foldersError } = await supabase
+        .storage
+        .from('paper_pdfs')
+        .list();
+
+    console.log("Folders/files:", folders);
+
+
+
+    const paper = {
+        paper_id: "05978224-a60e-4dc2-9993-c3f1a1dbcd71",
+        title: "Effect of Exercise on Cognitive Function in Older Adults",
+        authors: "Smith J, Johnson M, Williams K",
+        publication_date: "2023-06-15",
+        abstract: "Background: Aging populations face increasing cognitive decline...",
+        full_text_url: "https://ihyuiglrcitnuurezypc.supabase.co/storage/v1/object/public/paper_pdfs/05978224-a60e-4dc2-9993-c3f1a1dbcd71.pdf",
+        doi: "10.1234/sample.123",
+        keywords: ["cognitive function", "exercise", "aging"]
+    }
+    // return paper;
+    if (paper) {
+        // Get a signed URL for the PDF
+        const { data: signedUrl, error: signError } = await supabase
+            .storage
+            .from('paper_pdfs')
+            .createSignedUrl(`${paper.paper_id}.pdf`, 3600); // 1 hour expiry
+
+        if (signError) {
+
+            // log the details of the error
+            console.error('Error signing URL:', signError);
+            console.log("the target file name was:", `${paper.paper_id}.pdf`);
+            throw signError;
+        }
+
+        return {
+            ...paper,
+            full_text_url: signedUrl.signedUrl
+        };
+    }
+    return null;
+};
+
+export const submitFullTextReview = async (reviewData) => {
+    // For testing, just log the data
+    console.log('Submitted review:', {
+        timestamp: new Date().toISOString(),
+        ...reviewData
+    });
+
+    // Simulate async operation
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    return true;
+};

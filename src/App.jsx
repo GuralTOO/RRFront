@@ -19,6 +19,7 @@ import AllPapers from './Scripts/Experiment/pages/AllPapers';
 import UserSettingsPage from './Scripts/Settings/UserSettingsPage';
 import ProjectDetails from './Scripts/Experiment/pages/Project/ProjectDetails';
 import TinderForAbstracts from './Scripts/Experiment/pages/Project/Tinder/TinderForAbstracts';
+import FullTextReview from './Scripts/Experiment/pages/Project/FullText/FullTextReview';
 import TinderForAbstractConflicts from './Scripts/Experiment/pages/Project/Tinder/TinderForAbstractConflicts';
 import InterestForm from './Scripts/InterestForm/InterestForm';
 
@@ -71,6 +72,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard3 />} />
             <Route path="projects" element={<AllProjects />} />
             <Route path="projects/:projectId" element={<ProjectDetails />} />
+            <Route path="projects/:projectId/fulltextreview" element={<FullTextReview />} />
             <Route path="projects/:projectId/review" element={<TinderForAbstracts />} />
             <Route path="projects/:projectId/conflicts" element={<TinderForAbstractConflicts />} />
             <Route path="papers" element={<AllPapers />} />
