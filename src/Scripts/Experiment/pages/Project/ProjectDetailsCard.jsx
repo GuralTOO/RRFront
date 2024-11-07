@@ -12,6 +12,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { editProject } from '@/api/projectsApi';
 
 const { Paragraph } = Typography;
 

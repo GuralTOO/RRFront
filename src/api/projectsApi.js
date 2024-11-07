@@ -255,7 +255,6 @@ export async function fetchProjectUsers(projectId) {
 // In /api/projectsApi.ts
 
 export const getExclusionCriteria = async (projectId) => {
-    // Normally this would fetch from the database, but for testing:
     return [
         {
             criteria_id: "ec1",

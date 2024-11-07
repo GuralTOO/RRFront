@@ -308,8 +308,12 @@ const ProjectDetails = () => {
                                 <Tag icon={<UserOutlined />} color="blue">{userRole}</Tag>
                             </Tooltip>
                             <Link to={`/projects/${projectId}/review`}>
-                                <Button icon={<FileSearchOutlined />} type="primary">Review Papers</Button>
+                                <Button icon={<FileSearchOutlined />} type="primary">Abstract Review</Button>
                             </Link>
+                            <Link to={`/projects/${projectId}/fulltextreview`}>
+                                <Button icon={<FileSearchOutlined />} type="primary">Full-text Review</Button>
+                            </Link>
+
                             {
                                 (userRole === 'admin' || userRole === 'senior') &&
                                 <Link to={`/projects/${projectId}/conflicts`}>
