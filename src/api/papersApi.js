@@ -298,7 +298,7 @@ export async function addPaperToDatabase(paperData, projectId, relevancyScore = 
     };
 }
 
-export const uploadCsvFile = async (file, projectId) => {
+export const uploadImportFile = async (file, projectId, fileType) => {
     try {
         // Get the current user's session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -334,6 +334,7 @@ export const uploadCsvFile = async (file, projectId) => {
                 projectId: projectId,
                 bucket: 'csv-uploads',
                 filePath: filePath,
+                fileType: fileType
             })
         });
 
@@ -347,7 +348,7 @@ export const uploadCsvFile = async (file, projectId) => {
         return functionData;
 
     } catch (error) {
-        console.error('Error in uploadCsvFile:', error);
+        console.error('Error in uploadImportFile:', error);
         throw error;
     }
 };

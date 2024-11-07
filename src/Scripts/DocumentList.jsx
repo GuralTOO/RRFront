@@ -21,7 +21,7 @@ import {
     PaginationNext,
     PaginationPrevious
 } from "@/components/ui/pagination";
-import CsvUploadModal from './Experiment/pages/Project/CsvUploadModal';
+import FileUploadModal from './Experiment/pages/Project/FileUploadModal';
 
 const DocumentList = ({ projectId }) => {
     const [sortConfig, setSortConfig] = useState({ field: 'created_at', ascending: false });
@@ -144,7 +144,7 @@ const DocumentList = ({ projectId }) => {
         visiblePageNumbers.push(...Array.from(pages).sort((a, b) => a - b));
     }
 
-    const handleCsvUploadComplete = () => {
+    const handleFileUploadComplete = () => {
         fetchDocuments(currentPage);
     };
 
@@ -156,7 +156,7 @@ const DocumentList = ({ projectId }) => {
                 <h3 className="text-2xl font-semibold">Affiliated Papers</h3>
                 <div className="space-x-2">
                     <AddPaperModal onAddPaper={handleAddPaper} />
-                    <CsvUploadModal projectId={projectId} onUploadComplete={handleCsvUploadComplete} />
+                    <FileUploadModal projectId={projectId} onUploadComplete={handleFileUploadComplete} />
                 </div>
             </div>
 
