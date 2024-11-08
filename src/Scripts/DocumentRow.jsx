@@ -81,9 +81,9 @@ const DocumentRow = ({ doc, index, expandedIndex, toggleExpand }) => {
 
     const truncate = (text, maxLength) => {
         if (text.length <= maxLength) return text;
-        return text.substr(0, maxLength) + '...';
-    };
-
+        return text.slice(0, maxLength) + '...';
+      };
+      
     const handleToggleExpand = () => {
         setIsExpanded(!isExpanded);
         toggleExpand(index);
