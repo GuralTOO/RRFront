@@ -1,6 +1,8 @@
 import { supabase } from "@/supabaseClient";
 
 
+
+
 export async function getPaperDetails(paperId) {
     const { data, error } = await supabase
         .from('papers')
@@ -265,8 +267,6 @@ export async function massUpdateRelevancyScores(projectId) {
         throw invoke_error;
     }
 
-
-
 }
 
 // Calls the Supabase stored procedure to add a paper to the papers table and then to the project table
@@ -352,3 +352,4 @@ export const uploadImportFile = async (file, projectId, fileType) => {
         throw error;
     }
 };
+

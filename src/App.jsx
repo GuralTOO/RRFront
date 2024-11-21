@@ -22,6 +22,7 @@ import TinderForAbstracts from './Scripts/Experiment/pages/Project/Tinder/Tinder
 import FullTextReview from './Scripts/Experiment/pages/Project/FullText/FullTextReview';
 import TinderForAbstractConflicts from './Scripts/Experiment/pages/Project/Tinder/TinderForAbstractConflicts';
 import InterestForm from './Scripts/InterestForm/InterestForm';
+import FullTextViewer from './Scripts/Document/FullTextViewer';
 
 
 function App() {
@@ -75,6 +76,7 @@ function App() {
             <Route path="projects/:projectId/fulltextreview" element={<FullTextReview />} />
             <Route path="projects/:projectId/review" element={<TinderForAbstracts />} />
             <Route path="projects/:projectId/conflicts" element={<TinderForAbstractConflicts />} />
+            <Route path="projects/:projectId/papers/:paperId" element={<FullTextViewer/>} />
             <Route path="papers" element={<AllPapers />} />
             <Route path="settings" element={<UserSettingsPage />} />
           </Route>
