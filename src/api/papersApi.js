@@ -328,21 +328,30 @@ export const uploadImportFile = async (file, projectId, fileType) => {
         console.log('File uploaded successfully:', data);
         console.log('The file has been uploaded to path:', filePath);
 
-        // Call the edge function to process the CSV
-        const { data: functionData, error: functionError } = await supabase.functions.invoke('process-csv', {
+
+        const cloudFunctionUrl = 'https://us-central1-exp001-429822.cloudfunctions.net/reference-importer';
+
+        const response = await fetch(cloudFunctionUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({
-                projectId: projectId,
+                projectId,
                 bucket: 'csv-uploads',
-                filePath: filePath,
-                fileType: fileType
+                filePath,
+                fileType
             })
         });
 
-        if (functionError) {
-            console.error('Error calling process-csv:', functionError);
-            throw functionError;
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error from cloud function:', errorText);
+            throw new Error(`Cloud function error: ${response.status} ${response.statusText}`);
         }
 
+        const functionData = await response.json();
+        
         // log success if the function was called successfully
         console.log('Function call successful:', functionData);
         return functionData;
