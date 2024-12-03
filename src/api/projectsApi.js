@@ -279,6 +279,8 @@ export const getExclusionCriteria = async (projectId) => {
     ];
 };
 
+
+// fake functions begin
 export const getNextPaperForFullTextReview = async (projectId) => {
     // This is a sample return format matching what we need for the UI
     const { data: folders, error: foldersError } = await supabase
@@ -324,6 +326,7 @@ export const getNextPaperForFullTextReview = async (projectId) => {
     return null;
 };
 
+
 export const submitFullTextReview = async (reviewData) => {
     // For testing, just log the data
     console.log('Submitted review:', {
@@ -336,3 +339,42 @@ export const submitFullTextReview = async (reviewData) => {
 
     return true;
 };
+
+// fake functions end
+
+export const getPaperFullTextDetails = async (projectId, paperId) => {
+    // This is sample data matching what we need for the UI
+    const paper = {
+        paper_id: "05978224-a60e-4dc2-9993-c3f1a1dbcd71",
+        title: "Effect of Exercise on Cognitive Function in Older Adults",
+        authors: "Smith J, Johnson M, Williams K",
+        publication_date: "2023-06-15",
+        abstract: "Background: Aging populations face increasing cognitive decline. Despite extensive research into pharmacological interventions, non-pharmacological approaches like exercise remain understudied. Methods: We conducted a randomized controlled trial with 240 adults aged 65-80 years. Participants were assigned to either a structured exercise program or control group for 12 months. Results: Exercise group participants showed significant improvements in cognitive function, particularly in memory and executive function domains. Discussion: Regular exercise may be an effective intervention for maintaining cognitive function in older adults.",
+        notes: "Initial read: Strong methodology but small sample size. Follow-up questions:\n- How was cognitive function measured?\n- Were there any dropouts during the 12-month period?",
+        full_text_url: "https://ihyuiglrcitnuurezypc.supabase.co/storage/v1/object/public/paper_pdfs/05978224-a60e-4dc2-9993-c3f1a1dbcd71.pdf",
+        doi: "10.1234/sample.123",
+        keywords: ["cognitive function", "exercise", "aging"],
+        project_id: projectId
+    };
+
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    return paper;
+};
+
+export const savePaperNotes = async (projectId, paperId, notes) => {
+    // In a real implementation, this would save to your database
+    console.log('Saving notes:', { projectId, paperId, notes });
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Simulate success
+    return { success: true };
+    
+    // To test error handling, uncomment this:
+    // throw new Error('Failed to save notes');
+};
+
+

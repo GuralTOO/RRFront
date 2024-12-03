@@ -68,6 +68,7 @@
 // export default DocumentRow;
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, ChevronUpIcon, FileTextIcon, MessageSquareIcon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -78,6 +79,10 @@ const DocumentRow = ({ doc, index, expandedIndex, toggleExpand }) => {
     const [isExpanded, setIsExpanded] = useState(expandedIndex === index);
     const [showCommentBox, setShowCommentBox] = useState(false);
     const [comment, setComment] = useState('');
+    const navigate = useNavigate();
+
+    // full-text-update
+    const [showFullText, setShowFullText] = useState(false);
 
     const truncate = (text, maxLength) => {
         if (text.length <= maxLength) return text;
@@ -172,16 +177,22 @@ const DocumentRow = ({ doc, index, expandedIndex, toggleExpand }) => {
                                         <MessageSquareIcon className="mr-2 h-4 w-4" />
                                         Add Comment
                                     </Button>
-                                    <Button variant="outline" size="sm">
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => navigate(`/projects/8cc10e68-d9fd-42b7-9941-85528477aa62/papers/${doc.paper_id}`)}
+                                    >
                                         <FileTextIcon className="mr-2 h-4 w-4" />
                                         View Full Text
                                     </Button>
+
                                 </div>
                             )}
                         </div>
                     </TableCell>
                 </TableRow>
             )}
+
         </>
     );
 };

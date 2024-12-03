@@ -1,6 +1,8 @@
 import { supabase } from "@/supabaseClient";
 
 
+
+
 export async function getPaperDetails(paperId) {
     const { data, error } = await supabase
         .from('papers')
@@ -265,8 +267,6 @@ export async function massUpdateRelevancyScores(projectId) {
         throw invoke_error;
     }
 
-
-
 }
 
 // Calls the Supabase stored procedure to add a paper to the papers table and then to the project table
@@ -288,6 +288,14 @@ export async function addPaperToDatabase(paperData, projectId, relevancyScore = 
     });
 
     if (error) throw error;
+
+    // Trigger the retrieve-full-text function
+    // Fire and forget - we don't need to wait for the result
+    supabase.functions.invoke('retrieve-full-text', {
+        body: { projectId }
+    }).catch(error => {
+        console.error('Error initiating full-text retrieval:', error);
+    });
 
     // If successful, return the new paper data
     return {
@@ -361,3 +369,4 @@ export const uploadImportFile = async (file, projectId, fileType) => {
         throw error;
     }
 };
+
