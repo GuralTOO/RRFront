@@ -359,7 +359,7 @@ export const uploadImportFile = async (file, projectId, fileType) => {
         }
 
         const functionData = await response.json();
-        
+
         // log success if the function was called successfully
         console.log('Function call successful:', functionData);
         return functionData;

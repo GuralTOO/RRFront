@@ -83,7 +83,7 @@ const SettingsTab = ({ projectId }) => {
                                     Add new researchers to collaborate on this project
                                 </p>
                             </div>
-                            <InviteUserModal onInviteUser={handleInviteUser} />
+                            <InviteUserModal projectId = {projectId} onInviteUser={handleInviteUser} />
                         </div>
                     </CardContent>
                 </Card>
