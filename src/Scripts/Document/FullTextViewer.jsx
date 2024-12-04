@@ -20,7 +20,7 @@ const FullTextViewer = () => {
     const [error, setError] = useState(null);
     const [paperDetails, setPaperDetails] = useState(null);
     const [notes, setNotes] = useState('');
-    
+
 
     // Create debounced save function
     const debouncedSave = useCallback(
