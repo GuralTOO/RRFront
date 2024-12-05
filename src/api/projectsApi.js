@@ -356,14 +356,13 @@ export const getPaperFullTextDetails = async (projectId, paperId) => {
           projectId: projectId
         }
       });
-  
+
       // Log the complete response
       console.log("Edge function response:", { data, error });
-  
       if (error) {
         throw new Error(`Edge function error: ${error.message}`);
       }
-  
+
       if (!data || !data.url) {
         throw new Error('No URL returned from edge function');
       }
