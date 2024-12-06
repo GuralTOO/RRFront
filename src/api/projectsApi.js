@@ -49,6 +49,50 @@ export async function getUserProjects() {
 }
 
 
+
+export const getCriteriaForProject = async (projectId) => {
+    try {
+        // First, get the project details to access the research question
+        const projectDetails = await getProjectDetails(projectId);
+        
+        const response = await fetch('https://generate-criteria-1066921648952.us-east1.run.app', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                project_id: projectId,
+                file_type: "JSON",
+                model: "gpt-4o-2024-11-20",
+                temperature: 0.0,
+                research_question: projectDetails.researchQuestion,
+                return_result: true
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            console.error('Error response from criteria service:', errorData);
+            throw new Error(`Failed to fetch criteria: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        // Validate the response structure
+        if (!data.inclusion_criteria || !data.exclusion_criteria) {
+            throw new Error('Invalid criteria data structure received from service');
+        }
+
+        return {
+            inclusion_criteria: data.inclusion_criteria,
+            exclusion_criteria: data.exclusion_criteria
+        };
+    } catch (error) {
+        console.error('Error in getCriteriaForProject:', error);
+        throw new Error(`Failed to generate criteria: ${error.message}`);
+    }
+};
+
 export async function createNewProject(projectName, researchQuestion) {
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -392,7 +436,9 @@ export const getNextPaperForFullTextReview = async (projectId) => {
     }
   };
 
-  
+
+
+
 
 export const submitFullTextReview = async (reviewData) => {
     // For testing, just log the data

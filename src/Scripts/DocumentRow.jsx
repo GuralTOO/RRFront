@@ -75,7 +75,7 @@ import { Progress } from "@/components/ui/progress";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 
-const DocumentRow = ({ doc, index, expandedIndex, toggleExpand }) => {
+const DocumentRow = ({ doc, projectId, index, expandedIndex, toggleExpand }) => {
     const [isExpanded, setIsExpanded] = useState(expandedIndex === index);
     const [showCommentBox, setShowCommentBox] = useState(false);
     const [comment, setComment] = useState('');
@@ -180,7 +180,7 @@ const DocumentRow = ({ doc, index, expandedIndex, toggleExpand }) => {
                                     <Button 
                                         variant="outline" 
                                         size="sm"
-                                        onClick={() => navigate(`/projects/8cc10e68-d9fd-42b7-9941-85528477aa62/papers/${doc.paper_id}`)}
+                                        onClick={() => navigate(`/projects/${projectId}/papers/${doc.paper_id}`)}
                                     >
                                         <FileTextIcon className="mr-2 h-4 w-4" />
                                         View Full Text

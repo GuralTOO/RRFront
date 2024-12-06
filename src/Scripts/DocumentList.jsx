@@ -220,6 +220,7 @@ const DocumentList = ({ projectId }) => {
                                 <DocumentRow
                                     key={doc.paper_id}
                                     doc={doc}
+                                    projectId={projectId}
                                     index={index}
                                     expandedIndex={expandedIndex}
                                     toggleExpand={toggleExpand}
