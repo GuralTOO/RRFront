@@ -11,6 +11,9 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { getPaperFullTextDetails, savePaperNotes } from '../../api/projectsApi';
 import { debounce } from 'lodash';
 import EnhancedNotes from './EnhancedNotes';
+import PDFUploader from '../Experiment/pages/Project/FullText/PDFUploader'
+import { uploadPaperPDF } from '../../api/projectsApi';
+
 
 const FullTextViewer = () => {
     const navigate = useNavigate();
@@ -49,7 +52,6 @@ const FullTextViewer = () => {
         setNotes(newNotes);
         debouncedSave(newNotes);
     };
-
 
 
     useEffect(() => {
@@ -92,7 +94,7 @@ const FullTextViewer = () => {
             <div className="flex-1 overflow-hidden">
                 <ResizablePanelGroup direction="horizontal">
                     {/* PDF Viewer Panel */}
-                    <ResizablePanel defaultSize={60}>
+                    {/* <ResizablePanel defaultSize={60}>
                         <ScrollArea className="h-full">
                             <div className="h-full">
                                 {loading ? (
@@ -113,6 +115,50 @@ const FullTextViewer = () => {
                                     <div className="flex items-center justify-center h-full">
                                         <p>No PDF available</p>
                                     </div>
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </ResizablePanel> */}
+
+                    <ResizablePanel defaultSize={60}>
+                        <ScrollArea className="h-full">
+                            <div className="h-full">
+                                {loading ? (
+                                    <div className="flex items-center justify-center h-full">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+                                    </div>
+                                ) : error ? (
+                                    <div className="flex items-center justify-center h-full">
+                                        <p className="text-red-600">{error}</p>
+                                    </div>
+                                ) : paperDetails?.full_text_url ? (
+                                    <iframe
+                                        src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(paperDetails.full_text_url)}`}
+                                        className="w-full h-full border-0"
+                                        title="PDF Viewer"
+                                    />
+                                ) : (
+                                    <PDFUploader 
+                                        projectId={projectId}
+                                        paperId={paperId}
+                                        onUploadComplete={async () => {
+                                            try {
+                                                // Reload the paper details to get the new PDF URL
+                                                const details = await getPaperFullTextDetails(projectId, paperId);
+                                                setPaperDetails(details);
+                                                toast({
+                                                    title: "Upload Complete",
+                                                    description: "PDF has been uploaded successfully.",
+                                                });
+                                            } catch (err) {
+                                                toast({
+                                                    variant: "destructive",
+                                                    title: "Error",
+                                                    description: "Failed to reload paper details.",
+                                                });
+                                            }
+                                        }}
+                                    />
                                 )}
                             </div>
                         </ScrollArea>

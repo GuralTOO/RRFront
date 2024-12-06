@@ -342,119 +342,113 @@ export const submitFullTextReview = async (reviewData) => {
 
 // fake functions end
 
+
 export const getPaperFullTextDetails = async (projectId, paperId) => {
     try {
-      // Override with our test values for now
-      projectId = "6b7b7f65-6eaf-4e05-a127-a75d9181b830";
-      paperId = "16ae6214-7f3c-4776-86d0-c0cced1296d1";
+        // First get the paper details with the join to project_papers
+        const { data: paperData, error: paperError } = await supabase
+            .from('project_papers')
+            .select(`
+                comments,
+                relevancy_score,
+                papers (
+                    paper_id,
+                    title,
+                    abstract,
+                    authors,
+                    publication_date,
+                    keywords,
+                    doi
+                )
+            `)
+            .eq('paper_id', paperId)
+            .eq('project_id', projectId)
+            .single();
 
-
-    // Call the edge function and properly handle the response
-    const { data, error } = await supabase.functions.invoke('get-pdf-url', {
-        body: {
-          paperId: paperId,
-          projectId: projectId
+        if (paperError) {
+            throw new Error(`Database error: ${paperError.message}`);
         }
-      });
 
-      // Log the complete response
-      console.log("Edge function response:", { data, error });
-      if (error) {
-        throw new Error(`Edge function error: ${error.message}`);
-      }
+        if (!paperData || !paperData.papers) {
+            throw new Error('Paper not found in database');
+        }
 
-      if (!data || !data.url) {
-        throw new Error('No URL returned from edge function');
-      }
+        // Get the signed URL from our edge function
+        const { data: urlData, error: urlError } = await supabase.functions.invoke('get-pdf-url', {
+            body: {
+                paperId,
+                projectId
+            }
+        });
 
-      // Return combined sample data with real PDF URL
-      const paper = {
-        paper_id: paperId,
-        title: "Effect of Exercise on Cognitive Function in Older Adults",
-        authors: "Smith J, Johnson M, Williams K",
-        publication_date: "2023-06-15",
-        abstract: "Background: Aging populations face increasing cognitive decline. Despite extensive research into pharmacological interventions, non-pharmacological approaches like exercise remain understudied. Methods: We conducted a randomized controlled trial with 240 adults aged 65-80 years. Participants were assigned to either a structured exercise program or control group for 12 months. Results: Exercise group participants showed significant improvements in cognitive function, particularly in memory and executive function domains. Discussion: Regular exercise may be an effective intervention for maintaining cognitive function in older adults.",
-        notes: "Initial read: Strong methodology but small sample size. Follow-up questions:\n- How was cognitive function measured?\n- Were there any dropouts during the 12-month period?",
-        full_text_url: data.url, // Using the real signed URL from GCS
-        doi: "10.1234/sample.123",
-        keywords: ["cognitive function", "exercise", "aging"],
-        project_id: projectId
-      };
-  
-      return paper;
+        console.log("Edge function response:", { urlData, urlError });
+
+        // Combine the database data with the URL (if available)
+        const paper = {
+            paper_id: paperData.papers.paper_id,
+            title: paperData.papers.title,
+            authors: Array.isArray(paperData.papers.authors) ? paperData.papers.authors.join(', ') : paperData.papers.authors,
+            publication_date: paperData.papers.publication_date,
+            abstract: paperData.papers.abstract,
+            comments: paperData.comments || '',
+            full_text_url: urlData?.url || null, // Only use the edge function URL
+            doi: paperData.papers.doi,
+            project_id: projectId,
+            relevancy_score: paperData.relevancy_score,
+            has_pdf: Boolean(urlData?.url) // Add flag to indicate if PDF is available
+        };
+        console.log("Paper info: ", paper);
+        return paper;
     } catch (error) {
-      console.error('Error fetching paper details:', error);
-      throw error;
-    }s
+        console.error('Error fetching paper details:', error);
+        throw error;
+    }
 };
 
-// export const getPaperFullTextDetails = async (projectId, paperId) => {
-//     try {
-//       // Get paper details from the database
-//       const { data: paperData, error: paperError } = await supabase
-//         .from('papers')
-//         .select(`
-//           paper_id,
-//           title,
-//           abstract,
-//           authors,
-//           publication_date,
-//           keywords,
-//           doi,
-//           project_papers!inner(
-//             comments,
-//             relevancy_score,
-//             project_id
-//           )
-//         `)
-//         .eq('paper_id', paperId)
-//         .eq('project_papers.project_id', projectId)
-//         .single();
-  
-//       if (paperError) {
-//         throw new Error(`Database error: ${paperError.message}`);
-//       }
-  
-//       if (!paperData) {
-//         throw new Error('Paper not found in database');
-//       }
-  
-//       // Get the signed URL from our edge function
-//       const { data: urlData, error: urlError } = await supabase.functions.invoke('get-pdf-url', {
-//         body: {
-//           paperId,
-//           projectId
-//         }
-//       });
-  
-//       console.log("Edge function response:", { urlData, urlError });
-  
-//       if (urlError) {
-//         console.error(`Edge function error: ${urlError.message}`);
-//         // Instead of throwing error, we'll return the paper data without the URL
-//       }
-  
-//       // Combine the database data with the URL (if available)
-//       const paper = {
-//         paper_id: paperData.paper_id,
-//         title: paperData.title,
-//         authors: paperData.authors.join(', '), // Convert array to string
-//         publication_date: paperData.publication_date,
-//         abstract: paperData.abstract,
-//         // notes: paperData.project_papers[0].comments || '', // Get comments from project_papers junction table
-//         full_text_url: urlData?.url || null, // Use null if URL fetch failed
-//         doi: paperData.doi,
-//         project_id: projectId,
-//         relevancy_score: paperData.project_papers[0].relevancy_score
-//       };
-  
-//       return paper;
-//     } catch (error) {
-//       console.error('Error fetching paper details:', error);
-//       throw error;
-//     }
-//   };
 
+export const uploadPaperPDF = async (projectId, paperId, file) => {
+    try {
+        // Validate file type and size
+        if (file.type !== 'application/pdf') {
+            throw new Error('Only PDF files are allowed');
+        }
+
+        // Maximum file size (10MB)
+        const MAX_FILE_SIZE = 10 * 1024 * 1024;
+        if (file.size > MAX_FILE_SIZE) {
+            throw new Error('File size must be less than 10MB');
+        }
+
+        // Convert file to base64
+        const base64File = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = error => reject(error);
+        });
+
+        // Call the edge function to upload the PDF
+        const { data, error } = await supabase.functions.invoke('upload-pdf', {
+            body: {
+                projectId,
+                paperId,
+                fileName: file.name,
+                fileType: file.type,
+                fileSize: file.size,
+                fileContent: base64File
+            }
+        });
+
+        if (error) {
+            throw new Error(`Upload failed: ${error.message}`);
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error uploading PDF:', error);
+        throw error;
+    }
+};
 
 export const savePaperNotes = async (projectId, paperId, notes) => {
     // In a real implementation, this would save to your database
@@ -490,5 +484,8 @@ supabase secrets set GOOGLE_CLOUD_PROJECT_ID="exp001-429822"
 # Give supabase access to the storage bucket to read the files
 supabase secrets set GCS_PDF_READER_CREDENTIALS="$(cat supabase-pdf-access-key.json)"
 
+
+
+"https://storage.googleapis.com/full-text-pdfs/6b7b7f65-6eaf-4e05-a127-a75d9181b830/16ae6214-7f3c-4776-86d0-c0cced1296d1?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=supabase-pdf-access%40exp001-429822.iam.gserviceaccount.com%2F20241206%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20241206T171618Z&X-Goog-Expires=3600&X-Goog-SignedHeaders=host&X-Goog-Signature=7a509e0bab5783813a53e1d8a832b839d521b3d5dd999b472ab9307d5dd0b580ed1f0b7540900c400d2cb397e5208ad54f8434ceda163eab11195a84fdb0a46f6c6db90393255790c20252d80e631af44f3569ce6a231ce5ed64ec0f3223549bad22481d412a9a79b54a94f3376a1ab59e201174048ccfa9ebc50faa2050377c70c1f87ef2728dfbf88e3d14932c78fc304de6057eabef479bfcd04dc15ff060214caca7272f9a85e3273ed697b88ee2289e4145bab023588bbcb3bd71a7c03db3e2861253e059abbb4b9967a0865bb41107998fb52bbfbd39ce934373aee2a3d4f013b706c93020f6b0cf0397d356aea44a66db60da01491018ff010ec10911"
 
 */

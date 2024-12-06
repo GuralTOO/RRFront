@@ -11,6 +11,8 @@ import { CalendarOutlined, UserOutlined } from '@ant-design/icons';
 import { useToast } from "@/hooks/use-toast";
 import { getProjectDetails, getNextPaperForFullTextReview, getExclusionCriteria } from '@/api/projectsApi';
 import { ArrowLeftOutlined } from '@ant-design/icons';
+import PDFUploader from './PDFUploader';
+
 
 const FullTextReview = () => {
     const { projectId } = useParams();
@@ -151,16 +153,25 @@ const FullTextReview = () => {
                 <ResizablePanel defaultSize={60}>
                     <ScrollArea className="h-screen">
                         <div className="p-4 h-full">
-                            {currentPaper?.full_text_url ? (
+                            {currentPaper?.has_pdf ? (
                                 <iframe
                                     src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(currentPaper.full_text_url)}`}
                                     className="w-full h-full min-h-screen border-0"
                                     title="PDF Viewer"
                                 />
                             ) : (
-                                <div className="flex items-center justify-center h-full">
-                                    <p>No PDF available</p>
-                                </div>
+                                <PDFUploader
+                                    projectId={projectId}
+                                    paperId={currentPaper?.paper_id}
+                                    onUploadComplete={() => {
+                                        // Reload the current paper data to get the new PDF URL
+                                        loadData();
+                                        toast({
+                                            title: "Upload Complete",
+                                            description: "PDF has been uploaded successfully.",
+                                        });
+                                    }}
+                                />
                             )}
                         </div>
                     </ScrollArea>
