@@ -56,7 +56,7 @@ const TinderForAbstracts = () => {
 
         setLoading(true);
         try {
-            await addReview(projectId, currentPaper.paper_id, decision);
+            await addReview(projectId, currentPaper.paper_id, decision, "abstract_screening");
             await fetchNextPaper();
         } catch (err) {
             setError(err.message);
@@ -139,3 +139,10 @@ const TinderForAbstracts = () => {
 };
 
 export default TinderForAbstracts;
+
+
+/*
+
+stage_name = ANY (ARRAY['abstract_screening'::text, 'full_text_review'::text, 'data_extraction'::text])
+
+*/

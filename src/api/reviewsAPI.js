@@ -1,6 +1,6 @@
 import { supabase } from "@/supabaseClient";
 
-export async function addReview(projectId, paperId, decision) {
+export async function addReview(projectId, paperId, decision, stage_name) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('No user logged in');
 
@@ -9,6 +9,17 @@ export async function addReview(projectId, paperId, decision) {
     // enforce that the review is one of the allowed values
     if (!['accept', 'reject', 'skip'].includes(decision)) {
         throw new Error('Invalid review value');
+    }
+    // First, get the stage_id from stage_name
+    const { data: stageData, error: stageError } = await supabase
+        .from('stages')
+        .select('stage_id')
+        .eq('stage_name', stage_name)
+        .single();
+
+    if (stageError) {
+        console.error('Error getting stage:', stageError);
+        throw new Error('Failed to get stage');
     }
 
     // Add the review
@@ -19,7 +30,8 @@ export async function addReview(projectId, paperId, decision) {
             paper_id: paperId,
             reviewer_id: user.id,
             decision: decision,
-            review_date: new Date().toISOString()
+            review_date: new Date().toISOString(),
+            stage_id: stageData.stage_id
         })
         .select('review_id');
 
@@ -47,7 +59,8 @@ export async function addReview(projectId, paperId, decision) {
         const { data: decisionData, error: decisionError } = await supabase
             .rpc('try_create_consensus_decision', {
                 p_project_id: projectId,
-                p_paper_id: paperId
+                p_paper_id: paperId,
+                p_stage_id: stageData.stage_id
             });
 
         if (decisionError) {
@@ -61,6 +74,8 @@ export async function addReview(projectId, paperId, decision) {
         has_conflict: hasConflict,
         conflict_id: conflictData[0]?.conflict_id
     };
+
+    // TODO: Add the concept of stages to the conflicts
 }
 
 export async function resolveConflict(conflict_id, resolution) {

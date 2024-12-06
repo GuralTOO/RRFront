@@ -281,51 +281,118 @@ export const getExclusionCriteria = async (projectId) => {
 
 
 // fake functions begin
+// export const getNextPaperForFullTextReview = async (projectId) => {
+//     // This is a sample return format matching what we need for the UI
+//     const { data: folders, error: foldersError } = await supabase
+//         .storage
+//         .from('paper_pdfs')
+//         .list();
+
+//     console.log("Folders/files:", folders);
+
+
+
+//     const paper = {
+//         paper_id: "05978224-a60e-4dc2-9993-c3f1a1dbcd71",
+//         title: "Effect of Exercise on Cognitive Function in Older Adults",
+//         authors: "Smith J, Johnson M, Williams K",
+//         publication_date: "2023-06-15",
+//         abstract: "Background: Aging populations face increasing cognitive decline...",
+//         full_text_url: "https://ihyuiglrcitnuurezypc.supabase.co/storage/v1/object/public/paper_pdfs/05978224-a60e-4dc2-9993-c3f1a1dbcd71.pdf",
+//         doi: "10.1234/sample.123",
+//         keywords: ["cognitive function", "exercise", "aging"]
+//     }
+//     // return paper;
+//     if (paper) {
+//         // Get a signed URL for the PDF
+//         const { data: signedUrl, error: signError } = await supabase
+//             .storage
+//             .from('paper_pdfs')
+//             .createSignedUrl(`${paper.paper_id}.pdf`, 3600); // 1 hour expiry
+
+//         if (signError) {
+
+//             // log the details of the error
+//             console.error('Error signing URL:', signError);
+//             console.log("the target file name was:", `${paper.paper_id}.pdf`);
+//             throw signError;
+//         }
+
+//         return {
+//             ...paper,
+//             full_text_url: signedUrl.signedUrl
+//         };
+//     }
+//     return null;
+// };
+
 export const getNextPaperForFullTextReview = async (projectId) => {
-    // This is a sample return format matching what we need for the UI
-    const { data: folders, error: foldersError } = await supabase
-        .storage
-        .from('paper_pdfs')
-        .list();
-
-    console.log("Folders/files:", folders);
-
-
-
-    const paper = {
-        paper_id: "05978224-a60e-4dc2-9993-c3f1a1dbcd71",
-        title: "Effect of Exercise on Cognitive Function in Older Adults",
-        authors: "Smith J, Johnson M, Williams K",
-        publication_date: "2023-06-15",
-        abstract: "Background: Aging populations face increasing cognitive decline...",
-        full_text_url: "https://ihyuiglrcitnuurezypc.supabase.co/storage/v1/object/public/paper_pdfs/05978224-a60e-4dc2-9993-c3f1a1dbcd71.pdf",
-        doi: "10.1234/sample.123",
-        keywords: ["cognitive function", "exercise", "aging"]
+    try {
+      // First get both stage IDs we need
+      const { data: stageData, error: stageError } = await supabase
+        .from('stages')
+        .select('stage_id, stage_name')
+        .in('stage_name', ['abstract_screening', 'full_text_review']);
+  
+      if (stageError) {
+        console.error('Error fetching stages:', stageError);
+        throw new Error('Failed to fetch stages');
+      }
+  
+      const abstractStageId = stageData.find(s => s.stage_name === 'abstract_screening')?.stage_id;
+      const fullTextStageId = stageData.find(s => s.stage_name === 'full_text_review')?.stage_id;
+  
+      // First get all papers with full text decisions
+      const { data: fullTextPapers, error: fullTextError } = await supabase
+        .from('paper_decisions')
+        .select('paper_id')
+        .eq('project_id', projectId)
+        .eq('stage_id', fullTextStageId);
+  
+      if (fullTextError) {
+        console.error('Error fetching full text papers:', fullTextError);
+        return null; // If we can't fetch full text papers, return null instead of throwing
+      }
+  
+      // Then get papers accepted in abstract screening but not in the full text list
+      const { data: paperData, error: paperError } = await supabase
+        .from('paper_decisions')
+        .select('paper_id')
+        .eq('project_id', projectId)
+        .eq('stage_id', abstractStageId)
+        .eq('decision', 'accept')
+        .limit(1);
+  
+      if (paperError) {
+        console.error('Error fetching next paper:', paperError);
+        return null;
+      }
+  
+      if (!paperData || paperData.length === 0) {
+        return null; // No papers need review
+      }
+  
+      // Use the existing helper function to get full details
+      const fullPaperDetails = await getPaperFullTextDetails(projectId, paperData[0].paper_id);
+  
+      // Return only the needed fields
+      return {
+        paper_id: fullPaperDetails.paper_id,
+        title: fullPaperDetails.title,
+        authors: fullPaperDetails.authors,
+        publication_date: fullPaperDetails.publication_date,
+        abstract: fullPaperDetails.abstract,
+        full_text_url: fullPaperDetails.full_text_url,
+        doi: fullPaperDetails.doi
+      };
+  
+    } catch (error) {
+      console.error('Error in getNextPaperForFullTextReview:', error);
+      return null; // Return null for any errors instead of throwing
     }
-    // return paper;
-    if (paper) {
-        // Get a signed URL for the PDF
-        const { data: signedUrl, error: signError } = await supabase
-            .storage
-            .from('paper_pdfs')
-            .createSignedUrl(`${paper.paper_id}.pdf`, 3600); // 1 hour expiry
+  };
 
-        if (signError) {
-
-            // log the details of the error
-            console.error('Error signing URL:', signError);
-            console.log("the target file name was:", `${paper.paper_id}.pdf`);
-            throw signError;
-        }
-
-        return {
-            ...paper,
-            full_text_url: signedUrl.signedUrl
-        };
-    }
-    return null;
-};
-
+  
 
 export const submitFullTextReview = async (reviewData) => {
     // For testing, just log the data
