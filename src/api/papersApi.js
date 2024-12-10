@@ -1,8 +1,6 @@
 import { supabase } from "@/supabaseClient";
 
 
-
-
 export async function getPaperDetails(paperId) {
     const { data, error } = await supabase
         .from('papers')
