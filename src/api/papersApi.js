@@ -370,3 +370,38 @@ export const uploadImportFile = async (file, projectId, fileType) => {
     }
 };
 
+
+
+export const getPaperNotes = async (projectId, paperId) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data, error } = await supabase
+      .from('paper_notes')
+      .select('content')
+      .match({
+        project_id: projectId,
+        paper_id: paperId,
+        user_id: user.id
+      })
+      .single();
+
+    if (error) throw error;
+    return data;
+};
+
+export const savePaperNotes = async (projectId, paperId, content) => {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { data, error } = await supabase
+      .from('paper_notes')
+      .upsert({
+        project_id: projectId,
+        paper_id: paperId,
+        user_id: user.id,
+        content: content
+      }, {
+        onConflict: 'project_id,paper_id,user_id'
+      });
+
+    if (error) throw error;
+    return data;
+};

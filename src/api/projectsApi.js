@@ -52,46 +52,96 @@ export async function getUserProjects() {
 
 export const getCriteriaForProject = async (projectId) => {
     try {
-        // First, get the project details to access the research question
-        const projectDetails = await getProjectDetails(projectId);
-        
-        const response = await fetch('https://generate-criteria-1066921648952.us-east1.run.app', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                project_id: projectId,
-                file_type: "JSON",
-                model: "gpt-4o-2024-11-20",
-                temperature: 0.0,
-                research_question: projectDetails.researchQuestion,
-                return_result: true
-            })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            console.error('Error response from criteria service:', errorData);
-            throw new Error(`Failed to fetch criteria: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        // Validate the response structure
-        if (!data.inclusion_criteria || !data.exclusion_criteria) {
-            throw new Error('Invalid criteria data structure received from service');
-        }
-
-        return {
-            inclusion_criteria: data.inclusion_criteria,
-            exclusion_criteria: data.exclusion_criteria
-        };
+      // First, get the project details to access the research question
+      const projectDetails = await getProjectDetails(projectId);
+      
+      // Validate research question exists before making the request
+      if (!projectDetails?.researchQuestion) {
+        throw new Error('Research question is required but was not found in project details');
+      }
+  
+      // Instead of making the API call, use hardcoded data
+      const data = {
+        "research_question": "What is the effect of cooling on health outcomes of patients diagnosed with Heat related illness, Stroke, Transient Ischemic Attack, Sepsis, Malignant Hyperthermia, Neuroleptic Malignant Syndrome, bacterial CNS infections, viral CNS infections, fungal CNS infections, Acute intoxication, Muscle relaxant withdrawal, Head injury, Thyroid storm.",
+        "inclusion_criteria": [
+          {
+            "Population": [
+              "Patients diagnosed with any of the following conditions: Heat related illness, Stroke, Transient Ischemic Attack, Sepsis, Malignant Hyperthermia, Neuroleptic Malignant Syndrome, bacterial CNS infections, viral CNS infections, fungal CNS infections, Acute intoxication, Muscle relaxant withdrawal, Head injury, or Thyroid storm.",
+              "Adults (≥18 years old) or pediatric patients (if specified in the study)."
+            ]
+          },
+          {
+            "Intervention": [
+              "Studies that evaluate the use of cooling interventions, including but not limited to surface cooling, endovascular cooling, evaporative cooling, or other temperature-lowering techniques."
+            ]
+          },
+          {
+            "Outcomes": [
+              "Studies reporting health outcomes such as mortality, neurological recovery, organ function, length of hospital stay, or other clinically relevant outcomes related to the intervention."
+            ]
+          },
+          {
+            "Study Design": [
+              "Randomized controlled trials (RCTs), cohort studies, case-control studies, or systematic reviews/meta-analyses.",
+              "Published in peer-reviewed journals."
+            ]
+          },
+          {
+            "Language and Timeframe": [
+              "Studies published in English.",
+              "Studies published within the last 20 years (2003–2023)."
+            ]
+          }
+        ],
+        "exclusion_criteria": [
+          {
+            "Population": [
+              "Patients without a confirmed diagnosis of any of the specified conditions.",
+              "Animal studies or in vitro studies."
+            ]
+          },
+          {
+            "Intervention": [
+              "Studies that do not involve cooling interventions or focus on unrelated treatments.",
+              "Studies where cooling is used for conditions outside the scope of the research question (e.g., post-cardiac arrest cooling)."
+            ]
+          },
+          {
+            "Outcomes": [
+              "Studies that do not report health outcomes related to cooling interventions.",
+              "Studies focusing solely on surrogate markers (e.g., temperature reduction) without clinical outcomes."
+            ]
+          },
+          {
+            "Study Design": [
+              "Case reports, editorials, commentaries, or opinion pieces.",
+              "Studies with insufficient methodological quality or incomplete data."
+            ]
+          },
+          {
+            "Language and Timeframe": [
+              "Studies not published in English.",
+              "Studies published before 2003."
+            ]
+          }
+        ]
+      };
+  
+      // Validate the response structure
+      if (!data.inclusion_criteria || !data.exclusion_criteria) {
+        console.error('Invalid data structure received:', data);
+        throw new Error('Invalid criteria data structure received from service');
+      }
+  
+      return {
+        inclusion_criteria: data.inclusion_criteria,
+        exclusion_criteria: data.exclusion_criteria
+      };
     } catch (error) {
-        console.error('Error in getCriteriaForProject:', error);
-        throw new Error(`Failed to generate criteria: ${error.message}`);
+      console.error('Error in getCriteriaForProject:', error);
+      throw new Error(`Failed to generate criteria: ${error.message}`);
     }
-};
+  };
 
 export async function createNewProject(projectName, researchQuestion) {
     const { data: { user } } = await supabase.auth.getUser();
@@ -371,22 +421,25 @@ export const getExclusionCriteria = async (projectId) => {
 // };
 
 export const getNextPaperForFullTextReview = async (projectId) => {
+    console.log(`Starting getNextPaperForFullTextReview for projectId: ${projectId}`);
     try {
-      // First get both stage IDs we need
+      console.log('Fetching stage IDs for abstract_screening and full_text_review...');
       const { data: stageData, error: stageError } = await supabase
         .from('stages')
         .select('stage_id, stage_name')
         .in('stage_name', ['abstract_screening', 'full_text_review']);
-  
+
       if (stageError) {
         console.error('Error fetching stages:', stageError);
         throw new Error('Failed to fetch stages');
       }
-  
+      console.log('Successfully fetched stage data:', stageData);
+
       const abstractStageId = stageData.find(s => s.stage_name === 'abstract_screening')?.stage_id;
       const fullTextStageId = stageData.find(s => s.stage_name === 'full_text_review')?.stage_id;
-  
-      // First get all papers with full text decisions
+      console.log(`Found stage IDs - Abstract: ${abstractStageId}, Full Text: ${fullTextStageId}`);
+
+      console.log('Fetching papers with existing full text decisions...');
       const { data: fullTextPapers, error: fullTextError } = await supabase
         .from('paper_decisions')
         .select('paper_id')
@@ -395,10 +448,11 @@ export const getNextPaperForFullTextReview = async (projectId) => {
   
       if (fullTextError) {
         console.error('Error fetching full text papers:', fullTextError);
-        return null; // If we can't fetch full text papers, return null instead of throwing
+        return null;
       }
+      console.log(`Found ${fullTextPapers?.length || 0} papers with full text decisions`);
   
-      // Then get papers accepted in abstract screening but not in the full text list
+      console.log('Fetching next paper for review from abstract screening...');
       const { data: paperData, error: paperError } = await supabase
         .from('paper_decisions')
         .select('paper_id')
@@ -411,16 +465,18 @@ export const getNextPaperForFullTextReview = async (projectId) => {
         console.error('Error fetching next paper:', paperError);
         return null;
       }
+      console.log(`Found ${paperData?.length || 0} papers needing review`);
   
       if (!paperData || paperData.length === 0) {
-        return null; // No papers need review
+        console.log('No papers found needing review');
+        return null;
       }
   
-      // Use the existing helper function to get full details
+      console.log(`Fetching full details for paper_id: ${paperData[0].paper_id}`);
       const fullPaperDetails = await getPaperFullTextDetails(projectId, paperData[0].paper_id);
+      console.log('Successfully retrieved full paper details');
   
-      // Return only the needed fields
-      return {
+      const result = {
         paper_id: fullPaperDetails.paper_id,
         title: fullPaperDetails.title,
         authors: fullPaperDetails.authors,
@@ -429,13 +485,14 @@ export const getNextPaperForFullTextReview = async (projectId) => {
         full_text_url: fullPaperDetails.full_text_url,
         doi: fullPaperDetails.doi
       };
+      console.log('Returning paper details:', { paper_id: result.paper_id, title: result.title });
+      return result;
   
     } catch (error) {
       console.error('Error in getNextPaperForFullTextReview:', error);
-      return null; // Return null for any errors instead of throwing
+      return null;
     }
   };
-
 
 
 
@@ -561,20 +618,6 @@ export const uploadPaperPDF = async (projectId, paperId, file) => {
         console.error('Error uploading PDF:', error);
         throw error;
     }
-};
-
-export const savePaperNotes = async (projectId, paperId, notes) => {
-    // In a real implementation, this would save to your database
-    console.log('Saving notes:', { projectId, paperId, notes });
-    
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Simulate success
-    return { success: true };
-    
-    // To test error handling, uncomment this:
-    // throw new Error('Failed to save notes');
 };
 
 

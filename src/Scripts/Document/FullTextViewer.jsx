@@ -1,18 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Textarea } from "@/components/ui/textarea";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { useToast } from "@/hooks/use-toast";
 import { CalendarOutlined, UserOutlined } from '@ant-design/icons';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { getPaperFullTextDetails, savePaperNotes } from '../../api/projectsApi';
+import { getPaperFullTextDetails } from '../../api/projectsApi';
 import { debounce } from 'lodash';
 import EnhancedNotes from './EnhancedNotes';
 import PDFUploader from '../Experiment/pages/Project/FullText/PDFUploader'
 import { uploadPaperPDF } from '../../api/projectsApi';
+import {getPaperNotes, savePaperNotes} from '../../api/papersApi';
 
 
 const FullTextViewer = () => {
@@ -43,16 +42,8 @@ const FullTextViewer = () => {
                 });
             }
         }, 1000),
-        [projectId, paperId, toast]
+        [projectId, paperId]
     );
-
-    // Handle notes changes
-    const handleNotesChange = (e) => {
-        const newNotes = e.target.value;
-        setNotes(newNotes);
-        debouncedSave(newNotes);
-    };
-
 
     useEffect(() => {
         const loadPaperDetails = async () => {
@@ -60,7 +51,10 @@ const FullTextViewer = () => {
             try {
                 const details = await getPaperFullTextDetails(projectId, paperId);
                 setPaperDetails(details);
-                setNotes(details.notes || '');
+
+                const noteData = await getPaperNotes(projectId, paperId);
+                setNotes(noteData?.content || '');
+
             } catch (err) {
                 setError(err.message);
                 toast({
@@ -93,33 +87,6 @@ const FullTextViewer = () => {
             {/* Main Content */}
             <div className="flex-1 overflow-hidden">
                 <ResizablePanelGroup direction="horizontal">
-                    {/* PDF Viewer Panel */}
-                    {/* <ResizablePanel defaultSize={60}>
-                        <ScrollArea className="h-full">
-                            <div className="h-full">
-                                {loading ? (
-                                    <div className="flex items-center justify-center h-full">
-                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
-                                    </div>
-                                ) : error ? (
-                                    <div className="flex items-center justify-center h-full">
-                                        <p className="text-red-600">{error}</p>
-                                    </div>
-                                ) : paperDetails?.full_text_url ? (
-                                    <iframe
-                                        src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(paperDetails.full_text_url)}`}
-                                        className="w-full h-full border-0"
-                                        title="PDF Viewer"
-                                    />
-                                ) : (
-                                    <div className="flex items-center justify-center h-full">
-                                        <p>No PDF available</p>
-                                    </div>
-                                )}
-                            </div>
-                        </ScrollArea>
-                    </ResizablePanel> */}
-
                     <ResizablePanel defaultSize={60}>
                         <ScrollArea className="h-full">
                             <div className="h-full">
@@ -168,8 +135,10 @@ const FullTextViewer = () => {
 
                     {/* Details Panel */}
                     <ResizablePanel defaultSize={40}>
-                        <div className="h-full flex flex-col">
-                            <div className="p-6 flex flex-col h-full">
+                        {/* <div className="h-full flex flex-col"> */}
+                        <ScrollArea className="h-full">
+                            {/* <div className="p-6 flex flex-col h-full"> */}
+                            <div className="p-6">
                                 {/* Paper Details */}
                                 <div className="mb-8">
                                     <h2 className="text-xl font-medium text-gray-900">
@@ -200,8 +169,8 @@ const FullTextViewer = () => {
                                 <div className="border-t border-gray-200 mb-8" />
 
                                 {/* Notes - Takes remaining space */}
-                                <div className="flex-1">
-                                    <EnhancedNotes
+                                <div className="mb-6">
+                                <EnhancedNotes
                                         notes={notes}
                                         onNotesChange={(newNotes) => {
                                             setNotes(newNotes);
@@ -210,7 +179,7 @@ const FullTextViewer = () => {
                                     />
                                 </div>
                             </div>
-                        </div>
+                        </ScrollArea>
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </div>
