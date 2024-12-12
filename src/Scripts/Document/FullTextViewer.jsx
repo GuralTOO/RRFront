@@ -50,6 +50,7 @@ const FullTextViewer = () => {
             setLoading(true);
             try {
                 const details = await getPaperFullTextDetails(projectId, paperId);
+                console.log("Full text URL:", details.full_text_url); // Add this log
                 setPaperDetails(details);
 
                 const noteData = await getPaperNotes(projectId, paperId);
@@ -100,9 +101,14 @@ const FullTextViewer = () => {
                                     </div>
                                 ) : paperDetails?.full_text_url ? (
                                     <iframe
-                                        src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(paperDetails.full_text_url)}`}
+                                        src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(
+                                            paperDetails.full_text_url.replace(/[\r\n\t]/g, '')
+                                        )}`}
                                         className="w-full h-full border-0"
                                         title="PDF Viewer"
+                                        onError={(e) => {
+                                            console.error("PDF iframe load error:", e);
+                                        }}
                                     />
                                 ) : (
                                     <PDFUploader 

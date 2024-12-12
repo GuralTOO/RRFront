@@ -20,12 +20,12 @@ export async function getUnreviewedPapers(projectId, orderBy = 'created_at', asc
     if (!user) throw new Error('No user logged in');
 
 
-    console.log("Getting unreviewed papers for project", projectId);
-    console.log("Order by:", orderBy, ascending ? 'ASC' : 'DESC');
+    // console.log("Getting unreviewed papers for project", projectId);
+    // console.log("Order by:", orderBy, ascending ? 'ASC' : 'DESC');
     // Validate orderBy to prevent SQL injection
     const validOrderColumns = ['created_at', 'title', 'relevancy_score', 'publication_date'];
     if (!validOrderColumns.includes(orderBy)) {
-        console.log("Received invalid order column: ", orderBy);
+        // console.log("Received invalid order column: ", orderBy);
         throw new Error('Invalid order column');
     }
 
@@ -79,7 +79,7 @@ export async function getUnreviewedPapers(projectId, orderBy = 'created_at', asc
     // Step 3: Filter out the reviewed papers
     const unreviewedPapers = allPapers.filter(paper => !reviewedPaperIds.has(paper.papers.paper_id));
 
-    console.log('Unreviewed papers:', unreviewedPapers);
+    // console.log('Unreviewed papers:', unreviewedPapers);
     return {
         data: unreviewedPapers.map(item => ({
             ...item.papers,
@@ -103,12 +103,12 @@ export async function getFilteredPapers(
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('No user logged in');
 
-    console.log("Getting filtered papers for project", projectId, "with decision", filterDecision);
-    console.log("Order by:", orderBy, ascending ? 'ASC' : 'DESC');
+    // console.log("Getting filtered papers for project", projectId, "with decision", filterDecision);
+    // console.log("Order by:", orderBy, ascending ? 'ASC' : 'DESC');
 
     const validOrderColumns = ['created_at', 'title', 'relevancy_score', 'publication_date'];
     if (!validOrderColumns.includes(orderBy)) {
-        console.log("Received invalid order column: ", orderBy);
+        // console.log("Received invalid order column: ", orderBy);
         throw new Error('Invalid order column');
     }
 
@@ -204,7 +204,7 @@ export async function addPaper(paperData, projectId) {
     let paper_id = null;
     addPaperToDatabase(paperData, projectId).then((data) => {
         paper_id = data.paper_id;
-        console.log('Paper added to the db:', data);
+        // console.log('Paper added to the db:', data);
     }).catch((error) => {
         console.error('Error adding paper:', error);
         return error;
@@ -212,7 +212,7 @@ export async function addPaper(paperData, projectId) {
         // Calculate the relevancy score for the paper
         if (paper_id) {
             calculateRelevancyScore(paper_id, projectId).then((data) => {
-                console.log('Relevancy score calculated:', data);
+                // console.log('Relevancy score calculated:', data);
             }).catch((error) => {
                 console.error('Error calculating relevancy score:', error);
             });
@@ -227,7 +227,7 @@ export async function addPaper(paperData, projectId) {
 }
 
 export async function calculateRelevancyScore(paperId, projectId) {
-    console.log('Calculating relevancy score for paper', paperId, 'in project', projectId);
+    // console.log('Calculating relevancy score for paper', paperId, 'in project', projectId);
     const { data, error } = await supabase.functions.invoke('calculate_relevancy_score', {
         body: {
             paper_id: paperId,
@@ -331,8 +331,8 @@ export const uploadImportFile = async (file, projectId, fileType) => {
             throw error;
         }
 
-        console.log('File uploaded successfully:', data);
-        console.log('The file has been uploaded to path:', filePath);
+        // console.log('File uploaded successfully:', data);
+        // console.log('The file has been uploaded to path:', filePath);
 
 
         const cloudFunctionUrl = 'https://us-central1-exp001-429822.cloudfunctions.net/reference-importer';
@@ -359,7 +359,7 @@ export const uploadImportFile = async (file, projectId, fileType) => {
         const functionData = await response.json();
 
         // log success if the function was called successfully
-        console.log('Function call successful:', functionData);
+        // console.log('Function call successful:', functionData);
         return functionData;
 
     } catch (error) {
@@ -380,7 +380,7 @@ export const getPaperNotes = async (projectId, paperId) => {
         paper_id: paperId,
         user_id: user.id
       })
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
     return data;

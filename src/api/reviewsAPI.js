@@ -4,7 +4,7 @@ export async function addReview(projectId, paperId, decision, stage_name) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('No user logged in');
 
-    console.log(`Adding review for paper ${paperId} in project ${projectId} by user ${user.id}. Decision: ${decision}`);
+    //console.log(`Adding review for paper ${paperId} in project ${projectId} by user ${user.id}. Decision: ${decision}`);
 
     // enforce that the review is one of the allowed values
     if (!['accept', 'reject', 'skip'].includes(decision)) {
@@ -81,7 +81,7 @@ export async function addReview(projectId, paperId, decision, stage_name) {
 export async function resolveConflict(conflict_id, resolution) {
 
     // get the uuid of the current user
-    console.log(`Resolving conflict ${conflict_id} with resolution ${resolution}`);
+    //console.log(`Resolving conflict ${conflict_id} with resolution ${resolution}`);
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError) throw userError;
     if (!user) throw new Error('No user logged in');
@@ -174,7 +174,7 @@ export async function getConflictPaper() {
 
         // Remove the nested project_papers object
         delete formattedResponse.project_papers;
-        console.log('Conflict paper:', formattedResponse);
+        //console.log('Conflict paper:', formattedResponse);
         return formattedResponse;
 
     } catch (error) {

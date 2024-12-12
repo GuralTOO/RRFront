@@ -233,7 +233,7 @@ export async function editProject(projectId, field, value) {
 
     // Check if the new value is different from the current value
     if (userProject.projects[dbField] === value) {
-        console.log('No change in value, skipping update');
+        //console.log('No change in value, skipping update');
         return userProject.projects; // Return current project data
     }
 
@@ -253,7 +253,7 @@ export async function editProject(projectId, field, value) {
 
     if (!data || data.length === 0) {
         console.error('Update did not affect any rows');
-        console.log('Project ID:', projectId);
+        //console.log('Project ID:', projectId);
         throw new Error('Project could not be updated. This might be due to permissions or the project no longer existing.');
     }
 
@@ -317,7 +317,7 @@ export async function inviteUserToProject(projectId, email, role) {
 }
 
 export async function fetchProjectUsers(projectId) {
-    console.log('Fetching project users for project:', projectId);
+    //console.log('Fetching project users for project:', projectId);
     const { data, error } = await supabase
         .from('user_projects')
         .select(`
@@ -421,9 +421,9 @@ export const getExclusionCriteria = async (projectId) => {
 // };
 
 export const getNextPaperForFullTextReview = async (projectId) => {
-    console.log(`Starting getNextPaperForFullTextReview for projectId: ${projectId}`);
+    //console.log(`Starting getNextPaperForFullTextReview for projectId: ${projectId}`);
     try {
-      console.log('Fetching stage IDs for abstract_screening and full_text_review...');
+      //console.log('Fetching stage IDs for abstract_screening and full_text_review...');
       const { data: stageData, error: stageError } = await supabase
         .from('stages')
         .select('stage_id, stage_name')
@@ -433,13 +433,13 @@ export const getNextPaperForFullTextReview = async (projectId) => {
         console.error('Error fetching stages:', stageError);
         throw new Error('Failed to fetch stages');
       }
-      console.log('Successfully fetched stage data:', stageData);
+      //console.log('Successfully fetched stage data:', stageData);
 
       const abstractStageId = stageData.find(s => s.stage_name === 'abstract_screening')?.stage_id;
       const fullTextStageId = stageData.find(s => s.stage_name === 'full_text_review')?.stage_id;
-      console.log(`Found stage IDs - Abstract: ${abstractStageId}, Full Text: ${fullTextStageId}`);
+      //console.log(`Found stage IDs - Abstract: ${abstractStageId}, Full Text: ${fullTextStageId}`);
 
-      console.log('Fetching papers with existing full text decisions...');
+      //console.log('Fetching papers with existing full text decisions...');
       const { data: fullTextPapers, error: fullTextError } = await supabase
         .from('paper_decisions')
         .select('paper_id')
@@ -450,9 +450,9 @@ export const getNextPaperForFullTextReview = async (projectId) => {
         console.error('Error fetching full text papers:', fullTextError);
         return null;
       }
-      console.log(`Found ${fullTextPapers?.length || 0} papers with full text decisions`);
+      //console.log(`Found ${fullTextPapers?.length || 0} papers with full text decisions`);
   
-      console.log('Fetching next paper for review from abstract screening...');
+      //console.log('Fetching next paper for review from abstract screening...');
       const { data: paperData, error: paperError } = await supabase
         .from('paper_decisions')
         .select('paper_id')
@@ -465,16 +465,16 @@ export const getNextPaperForFullTextReview = async (projectId) => {
         console.error('Error fetching next paper:', paperError);
         return null;
       }
-      console.log(`Found ${paperData?.length || 0} papers needing review`);
+      //console.log(`Found ${paperData?.length || 0} papers needing review`);
   
       if (!paperData || paperData.length === 0) {
-        console.log('No papers found needing review');
+        //console.log('No papers found needing review');
         return null;
       }
   
-      console.log(`Fetching full details for paper_id: ${paperData[0].paper_id}`);
+      //console.log(`Fetching full details for paper_id: ${paperData[0].paper_id}`);
       const fullPaperDetails = await getPaperFullTextDetails(projectId, paperData[0].paper_id);
-      console.log('Successfully retrieved full paper details');
+      //console.log('Successfully retrieved full paper details');
   
       const result = {
         paper_id: fullPaperDetails.paper_id,
@@ -485,7 +485,7 @@ export const getNextPaperForFullTextReview = async (projectId) => {
         full_text_url: fullPaperDetails.full_text_url,
         doi: fullPaperDetails.doi
       };
-      console.log('Returning paper details:', { paper_id: result.paper_id, title: result.title });
+      //console.log('Returning paper details:', { paper_id: result.paper_id, title: result.title });
       return result;
   
     } catch (error) {
@@ -499,10 +499,10 @@ export const getNextPaperForFullTextReview = async (projectId) => {
 
 export const submitFullTextReview = async (reviewData) => {
     // For testing, just log the data
-    console.log('Submitted review:', {
-        timestamp: new Date().toISOString(),
-        ...reviewData
-    });
+    // console.log('Submitted review:', {
+    //     timestamp: new Date().toISOString(),
+    //     ...reviewData
+    // });
 
     // Simulate async operation
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -533,7 +533,7 @@ export const getPaperFullTextDetails = async (projectId, paperId) => {
             `)
             .eq('paper_id', paperId)
             .eq('project_id', projectId)
-            .single();
+            .maybeSingle();
 
         if (paperError) {
             throw new Error(`Database error: ${paperError.message}`);
@@ -551,7 +551,12 @@ export const getPaperFullTextDetails = async (projectId, paperId) => {
             }
         });
 
-        console.log("Edge function response:", { urlData, urlError });
+        //console.log("Edge function response:", { urlData, urlError });
+
+        if (urlError) {
+          console.error("Edge function error:", urlError);
+          // Don't throw here, just continue without the URL
+        }
 
         // Combine the database data with the URL (if available)
         const paper = {
@@ -561,13 +566,13 @@ export const getPaperFullTextDetails = async (projectId, paperId) => {
             publication_date: paperData.papers.publication_date,
             abstract: paperData.papers.abstract,
             comments: paperData.comments || '',
-            full_text_url: urlData?.url || null, // Only use the edge function URL
+            full_text_url: urlData?.url || null,
             doi: paperData.papers.doi,
             project_id: projectId,
             relevancy_score: paperData.relevancy_score,
             has_pdf: Boolean(urlData?.url) // Add flag to indicate if PDF is available
         };
-        console.log("Paper info: ", paper);
+        //console.log("Paper info: ", paper);
         return paper;
     } catch (error) {
         console.error('Error fetching paper details:', error);
