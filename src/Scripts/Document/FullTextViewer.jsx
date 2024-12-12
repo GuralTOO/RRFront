@@ -10,7 +10,6 @@ import { getPaperFullTextDetails } from '../../api/projectsApi';
 import { debounce } from 'lodash';
 import EnhancedNotes from './EnhancedNotes';
 import PDFUploader from '../Experiment/pages/Project/FullText/PDFUploader'
-import { uploadPaperPDF } from '../../api/projectsApi';
 import {getPaperNotes, savePaperNotes} from '../../api/papersApi';
 
 

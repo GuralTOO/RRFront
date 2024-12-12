@@ -46,8 +46,8 @@ const PDFUploader = ({ projectId, paperId, onUploadComplete }) => {
                     className="hidden"
                     id="pdf-upload"
                 />
-                
-                <Button 
+
+                <Button
                     onClick={() => document.getElementById('pdf-upload').click()}
                     disabled={uploading}
                     variant="outline"

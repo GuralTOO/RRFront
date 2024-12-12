@@ -580,49 +580,45 @@ export const getPaperFullTextDetails = async (projectId, paperId) => {
     }
 };
 
-
 export const uploadPaperPDF = async (projectId, paperId, file) => {
-    try {
-        // Validate file type and size
-        if (file.type !== 'application/pdf') {
-            throw new Error('Only PDF files are allowed');
-        }
-
-        // Maximum file size (10MB)
-        const MAX_FILE_SIZE = 10 * 1024 * 1024;
-        if (file.size > MAX_FILE_SIZE) {
-            throw new Error('File size must be less than 10MB');
-        }
-
-        // Convert file to base64
-        const base64File = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = error => reject(error);
-        });
-
-        // Call the edge function to upload the PDF
-        const { data, error } = await supabase.functions.invoke('upload-pdf', {
-            body: {
-                projectId,
-                paperId,
-                fileName: file.name,
-                fileType: file.type,
-                fileSize: file.size,
-                fileContent: base64File
-            }
-        });
-
-        if (error) {
-            throw new Error(`Upload failed: ${error.message}`);
-        }
-
-        return data;
-    } catch (error) {
-        console.error('Error uploading PDF:', error);
-        throw error;
+  try {
+    // Validate file type and size
+    if (file.type !== 'application/pdf') {
+      throw new Error('Only PDF files are allowed');
     }
+
+    // Maximum file size (20MB)
+    const MAX_FILE_SIZE = 20 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      throw new Error('File size must be less than 20MB');
+    }
+
+    // Convert file to base64
+    const base64File = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = error => reject(error);
+    });
+
+    // Call the edge function to upload the PDF
+    const { data, error } = await supabase.functions.invoke('upload-paper-pdf-gc', {
+      body: {
+        projectId,
+        paperId,
+        fileContent: base64File
+      }
+    });
+
+    if (error) {
+      throw new Error(`Upload failed: ${error.message}`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error uploading PDF:', error);
+    throw error;
+  }
 };
 
 
