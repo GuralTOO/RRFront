@@ -54,7 +54,7 @@ export const getCriteriaForProject = async (projectId) => {
     try {
       // First, get the project details to access the research question
       const projectDetails = await getProjectDetails(projectId);
-      
+
       // Validate research question exists before making the request
       if (!projectDetails?.researchQuestion) {
         throw new Error('Research question is required but was not found in project details');
@@ -62,7 +62,6 @@ export const getCriteriaForProject = async (projectId) => {
   
       // Instead of making the API call, use hardcoded data
       const data = {
-        "research_question": "What is the effect of cooling on health outcomes of patients diagnosed with Heat related illness, Stroke, Transient Ischemic Attack, Sepsis, Malignant Hyperthermia, Neuroleptic Malignant Syndrome, bacterial CNS infections, viral CNS infections, fungal CNS infections, Acute intoxication, Muscle relaxant withdrawal, Head injury, Thyroid storm.",
         "inclusion_criteria": [
           {
             "Population": [
