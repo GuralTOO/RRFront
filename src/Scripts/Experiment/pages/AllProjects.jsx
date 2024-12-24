@@ -30,7 +30,7 @@ const AllProjects = () => {
     }, []);
 
     const handleCardClick = (projectId) => {
-        navigate(`/projects/${projectId}`);
+        navigate(`/p/${projectId}`);
     };
 
     const handleCreateProject = (projectName) => {
