@@ -1,53 +1,6 @@
-// criteriaHelpers.js
+// criteriaAPI.js
 import { supabase } from '../supabaseClient';
 
-
-
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-// Fake data store to simulate database
-let fakeCriteria = [
-    {
-        criteria_id: '1',
-        project_id: '123',
-        criteria_text: "Patients diagnosed with any of the following conditions: Heat related illness, Stroke, TIA",
-        category: "Population",
-        is_inclusion: true,
-        created_at: new Date().toISOString()
-    },
-    {
-        criteria_id: '2',
-        project_id: '123',
-        criteria_text: "Adults (≥18 years old) or pediatric patients (if specified in the study)",
-        category: "Population",
-        is_inclusion: true,
-        created_at: new Date().toISOString()
-    },
-    {
-        criteria_id: '3',
-        project_id: '123',
-        criteria_text: "Studies that evaluate the use of cooling interventions",
-        category: "Intervention",
-        is_inclusion: true,
-        created_at: new Date().toISOString()
-    },
-    {
-        criteria_id: '4',
-        project_id: '123',
-        criteria_text: "Animal studies or in vitro studies",
-        category: "Population",
-        is_inclusion: false,
-        created_at: new Date().toISOString()
-    },
-    {
-        criteria_id: '5',
-        project_id: '123',
-        criteria_text: "Studies that do not involve cooling interventions",
-        category: "Intervention",
-        is_inclusion: false,
-        created_at: new Date().toISOString()
-    }
-];
 
 export async function generateCriteria(projectId){
 
@@ -96,8 +49,6 @@ export async function getCriteriaForProject(projectId) {
 
     // Transform the data into the expected format with grouped categories
     return {
-        // inclusion_criteria: groupCriteriaByCategory(fakeCriteria.filter(c => c.is_inclusion)),
-        // exclusion_criteria: groupCriteriaByCategory(fakeCriteria.filter(c => !c.is_inclusion))
         inclusion_criteria: groupCriteriaByCategory(criteria.filter(c => c.is_inclusion)),
         exclusion_criteria: groupCriteriaByCategory(criteria.filter(c => !c.is_inclusion))
     };

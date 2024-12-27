@@ -1,3 +1,4 @@
+// CriteriaTab.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Edit2, Trash2, Check, X, Wand2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";

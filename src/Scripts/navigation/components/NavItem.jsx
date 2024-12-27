@@ -1,22 +1,23 @@
-// src/Scripts/navigation/components/NavItem.jsx
+// NavItem.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 
 const NavItem = ({ to, icon: Icon, label, isActive }) => (
-  <li>
-    <Link
-      to={to}
-      className={cn(
-        "flex items-center px-2 py-1.5 text-sm rounded-md transition-colors",
-        "hover:bg-gray-100",
-        isActive ? "text-blue-600" : "text-gray-600"
-      )}
-    >
-      <Icon className="h-4 w-4 mr-2" />
+  <Link
+    to={to}
+    className={`
+      flex items-center px-4 py-3 text-base transition-colors
+      ${isActive 
+        ? 'text-gray-900 bg-gray-100 font-medium' 
+        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+      }
+    `}
+  >
+    <Icon className="h-5 w-5 shrink-0" strokeWidth={1.5} />
+    <span className="ml-3 overflow-hidden transition-all duration-150 whitespace-nowrap opacity-0 group-hover:opacity-100">
       {label}
-    </Link>
-  </li>
+    </span>
+  </Link>
 );
-
 export default NavItem;

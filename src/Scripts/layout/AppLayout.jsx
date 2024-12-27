@@ -1,4 +1,3 @@
-// src/components/layout/AppLayout.jsx
 import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation, useParams } from 'react-router-dom';
 import MainNav from '../navigation/MainNav';
@@ -10,10 +9,8 @@ const AppLayout = ({ session }) => {
   const { projectId } = useParams();
   const [projectName, setProjectName] = useState('');
   
-  // Determine if we're inside a project
   const isProjectRoute = location.pathname.startsWith('/p/');
 
-  // Fetch project name when inside a project
   useEffect(() => {
     if (projectId) {
       getProjectDetails(projectId)
@@ -29,7 +26,7 @@ const AppLayout = ({ session }) => {
       ) : (
         <MainNav />
       )}
-      <main className="flex-1">
+      <main className="flex-1 ml-20 relative">
         <Outlet />
       </main>
     </div>

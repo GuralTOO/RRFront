@@ -28,6 +28,7 @@ import CriteriaPage from './Scripts/Project/pages/Criteria/CriteriaPage';
 import ImportPage from './Scripts/Project/pages/Import/ImportPage';
 import ExportPage from './Scripts/Project/pages/Export/ExportPage';
 import ProjectSettingsPage from './Scripts/Project/Pages/Settings/SettingsPage';
+import PapersPage from './Scripts/Project/Pages/Papers/PapersPage';
 
 import AppLayout from './Scripts/layout/AppLayout';
 
@@ -89,7 +90,7 @@ function App() {
             <Route path="p/:projectId">
               <Route index element={<ProjectHome />} />
               <Route path="papers">
-                <Route index element={<AllProjects />} />
+                <Route index element={<PapersPage />} />
                 <Route path=":paperId" element={<FullTextViewer />} />
               </Route>
               <Route path="criteria" element={<CriteriaPage />} />

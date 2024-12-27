@@ -54,7 +54,7 @@ const FullTextReview = () => {
                     title: "Review Complete",
                     description: "No more papers to review in the full-text stage.",
                 });
-                navigate(`/projects/${projectId}`);
+                navigate(`/p/${projectId}`);
             }
         } catch (err) {
             setError(err.message);
@@ -107,7 +107,7 @@ const FullTextReview = () => {
                     title: "Review Complete",
                     description: "No more papers to review in the full-text stage.",
                 });
-                navigate(`/projects/${projectId}`);
+                navigate(`/p/${projectId}`);
             }
         } catch (err) {
             toast({
@@ -142,7 +142,7 @@ const FullTextReview = () => {
     return (
         <div className="h-screen max-h-screen overflow-hidden">
             <Button
-                onClick={() => navigate(`/projects/${projectId}`)}
+                onClick={() => navigate(`/p/${projectId}`)}
                 className="mb-4"
             >
                 <ArrowLeftOutlined className="mr-2" /> Back to Project

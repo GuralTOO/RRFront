@@ -6,12 +6,13 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { useToast } from "@/hooks/use-toast";
 import { CalendarOutlined, UserOutlined } from '@ant-design/icons';
 import { ArrowLeftOutlined } from '@ant-design/icons';
+import { BookOpen, ChevronLeft } from 'lucide-react';
 import { getPaperFullTextDetails } from '../../api/projectsApi';
 import { debounce } from 'lodash';
 import EnhancedNotes from './EnhancedNotes';
 import PDFUploader from '../Experiment/pages/Project/FullText/PDFUploader'
 import {getPaperNotes, savePaperNotes} from '../../api/papersApi';
-
+import PageHeader from '../Project/components/PageHeader';
 
 const FullTextViewer = () => {
     const navigate = useNavigate();
@@ -74,15 +75,20 @@ const FullTextViewer = () => {
     return (
         <div className="h-screen max-h-screen flex flex-col">
             {/* Header */}
-            <div className="p-4 border-b">
+            <PageHeader 
+                icon={BookOpen}
+                title="Paper Reader"
+            >
                 <Button
-                    onClick={() => navigate(`/projects/${projectId}`)}
+                    onClick={() => navigate(`/p/${projectId}/papers`)}
                     variant="ghost"
-                    className="mb-2"
+                    size="sm"
+                    className="gap-2"
                 >
-                    <ArrowLeftOutlined className="mr-2" /> Back to Project
+                    <ChevronLeft className="h-4 w-4" />
+                    Back to Papers
                 </Button>
-            </div>
+            </PageHeader>
 
             {/* Main Content */}
             <div className="flex-1 overflow-hidden">

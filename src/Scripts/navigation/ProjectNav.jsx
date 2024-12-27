@@ -1,12 +1,26 @@
-// src/Scripts/navigation/ProjectNav.jsx
 import React from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { 
-  Home, FileText, Filter, Database, 
-  AlertCircle, Settings, Upload, Download,
-  ChevronRight 
-} from 'lucide-react';
 import NavItem from './components/NavItem';
+import { 
+  Home,                 // Overview
+  Files,               // Papers (changed from FileText)
+  ListFilter,          // Selection Criteria (changed from Filter)
+  ScanText,          // Abstract Screening (changed from Filter)
+  BookOpen,            // Full-text Screening (changed from FileText)
+  TableProperties,     // Data Extraction (changed from Database)
+  AlertOctagon,        // Conflicts (changed from AlertCircle)
+  Upload,              // Import
+  Download,            // Export
+  Settings,            // Project Settings
+  ChevronLeft
+} from 'lucide-react';
+
+const NavSection = ({ children }) => (
+  <div className="space-y-1">
+    {children}
+  </div>
+);
+
 
 const ProjectNav = ({ projectName }) => {
   const location = useLocation();
@@ -18,102 +32,104 @@ const ProjectNav = ({ projectName }) => {
   };
 
   return (
-    <div className="w-64 border-r bg-gray-50/50 flex flex-col min-h-screen">
-      {/* Logo/Header */}
-      <div className="p-4 border-b">
-        <div className="flex items-center">
-          <div 
-            className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center cursor-pointer"
-            onClick={() => navigate('/projects')}
-          >
-            <span className="text-white font-bold">RR</span>
+    <div className="w-20 hover:w-64 group transition-all duration-200 ease-in-out fixed top-0 left-0 h-full bg-white flex flex-col border-r border-gray-200 z-50">
+      {/* Header */}
+      <div className="flex flex-col">
+        <div className="flex h-16 items-center px-4 bg-white">
+          {/* Logo container that's always visible */}
+          <div className="flex items-center min-w-[40px]">
+            <div 
+              onClick={() => navigate('/projects')}
+              className="w-10 h-10 bg-blue-600 rounded flex items-center justify-center cursor-pointer"
+            >
+              <span className="text-white font-semibold text-lg">RR</span>
+            </div>
           </div>
-          <ChevronRight className="mx-2 h-4 w-4 text-gray-400" />
-          <span className="font-semibold text-gray-900 truncate">{projectName}</span>
+          
+          {/* Back arrow and project name that appears only when expanded */}
+          <div className="ml-3 flex-1 flex items-center overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <ChevronLeft className="h-4 w-4 text-gray-400 shrink-0" />
+            <span className="ml-2 font-medium text-sm text-gray-800 whitespace-nowrap">
+              {projectName}
+            </span>
+          </div>
         </div>
+        <div className="h-[1px] bg-gray-200"></div>
       </div>
 
-      {/* Navigation Items */}
-      <nav className="flex-1 p-4">
-        <div className="space-y-6">
-          {/* Main sections */}
-          <ul className="space-y-2">
-            <NavItem 
-              to={`/p/${projectId}`}
-              icon={Home}
-              label="Home"
-              isActive={location.pathname === `/p/${projectId}`}
-            />
-            <NavItem 
-              to={`/p/${projectId}/papers`}
-              icon={FileText}
-              label="Papers"
-              isActive={getIsActive('/papers')}
-            />
-            <NavItem 
-              to={`/p/${projectId}/criteria`}
-              icon={Filter}
-              label="Selection Criteria"
-              isActive={getIsActive('/criteria')}
-            />
-          </ul>
+      {/* Navigation Sections */}
+      <nav className="flex-1 px-3 py-4 space-y-6 overflow-y-auto">
+        {/* Project Management Section */}
+        <NavSection>
+          <NavItem 
+            to={`/p/${projectId}`}
+            icon={Home}
+            label="Overview"
+            isActive={location.pathname === `/p/${projectId}`}
+          />
+          <NavItem 
+            to={`/p/${projectId}/papers`}
+            icon={Files}
+            label="Papers"
+            isActive={getIsActive('/papers')}
+          />
+          <NavItem 
+            to={`/p/${projectId}/criteria`}
+            icon={ListFilter}
+            label="Selection Criteria"
+            isActive={getIsActive('/criteria')}
+          />
+        </NavSection>
 
-          {/* Review sections */}
-          <div>
-            <div className="h-px bg-gray-200" />
-            <ul className="mt-4 space-y-2">
-              <NavItem 
-                to={`/p/${projectId}/review/abstract`}
-                icon={Filter}
-                label="Abstract Screening"
-                isActive={getIsActive('/review/abstract')}
-              />
-              <NavItem 
-                to={`/p/${projectId}/review/fulltext`}
-                icon={Filter}
-                label="Full-text Screening"
-                isActive={getIsActive('/review/fulltext')}
-              />
-              <NavItem 
-                to={`/p/${projectId}/review/extraction`}
-                icon={Database}
-                label="Data Extraction"
-                isActive={getIsActive('/review/extraction')}
-              />
-              <NavItem 
-                to={`/p/${projectId}/review/conflicts`}
-                icon={AlertCircle}
-                label="Conflicts"
-                isActive={getIsActive('/review/conflicts')}
-              />
-            </ul>
-          </div>
+        {/* Review Queue Section */}
+        <NavSection>
+          <NavItem 
+            to={`/p/${projectId}/review/abstract`}
+            icon={ScanText}
+            label="Abstract Screening"
+            isActive={getIsActive('/review/abstract')}
+          />
+          <NavItem 
+            to={`/p/${projectId}/review/fulltext`}
+            icon={BookOpen}
+            label="Full-text Screening"
+            isActive={getIsActive('/review/fulltext')}
+          />
+          <NavItem 
+            to={`/p/${projectId}/review/extraction`}
+            icon={TableProperties}
+            label="Data Extraction"
+            isActive={getIsActive('/review/extraction')}
+          />
+          <NavItem 
+            to={`/p/${projectId}/review/conflicts`}
+            icon={AlertOctagon}
+            label="Conflicts"
+            isActive={getIsActive('/review/conflicts')}
+          />
+        </NavSection>
 
-          {/* Project management */}
-          <div>
-            <div className="h-px bg-gray-200" />
-            <ul className="mt-4 space-y-2">
-              <NavItem 
-                to={`/p/${projectId}/import`}
-                icon={Upload}
-                label="Import"
-                isActive={getIsActive('/import')}
-              />
-              <NavItem 
-                to={`/p/${projectId}/export`}
-                icon={Download}
-                label="Export"
-                isActive={getIsActive('/export')}
-              />
-              <NavItem 
-                to={`/p/${projectId}/settings`}
-                icon={Settings}
-                label="Project Settings"
-                isActive={getIsActive('/settings')}
-              />
-            </ul>
-          </div>
-        </div>
+        {/* Project Management Section */}
+        <NavSection>
+          <NavItem 
+            to={`/p/${projectId}/import`}
+            icon={Upload}
+            label="Import"
+            isActive={getIsActive('/import')}
+          />
+          <NavItem 
+            to={`/p/${projectId}/export`}
+            icon={Download}
+            label="Export"
+            isActive={getIsActive('/export')}
+          />
+          <NavItem 
+            to={`/p/${projectId}/settings`}
+            icon={Settings}
+            label="Project Settings"
+            isActive={getIsActive('/settings')}
+          />
+        </NavSection>
       </nav>
     </div>
   );

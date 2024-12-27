@@ -180,7 +180,7 @@ const DocumentRow = ({ doc, projectId, index, expandedIndex, toggleExpand }) => 
                                     <Button 
                                         variant="outline" 
                                         size="sm"
-                                        onClick={() => navigate(`/projects/${projectId}/papers/${doc.paper_id}`)}
+                                        onClick={() => navigate(`/p/${projectId}/papers/${doc.paper_id}`)}
                                     >
                                         <FileTextIcon className="mr-2 h-4 w-4" />
                                         View Full Text

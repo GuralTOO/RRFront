@@ -1,9 +1,9 @@
-// src/Scripts/Project/pages/Export/ExportPage.jsx
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { Download } from 'lucide-react';
+import PageHeader from '../../components/PageHeader';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/supabaseClient";
 
@@ -54,32 +54,40 @@ const ExportPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Export Project Data</h1>
-      <Card>
-        <CardHeader>
-          <CardTitle>Export Options</CardTitle>
-          <CardDescription>Download your project data in various formats</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div>
-            <h3 className="text-sm font-medium mb-2">Complete Project Export</h3>
-            <div className="space-y-2">
-              <Button
-                onClick={handleExport}
-                disabled={exporting}
-                className="w-full sm:w-auto"
-              >
-                <Download className="mr-2 h-4 w-4" />
-                {exporting ? 'Exporting...' : 'Export Project Data'}
-              </Button>
-              <p className="text-sm text-gray-500">
-                Exports all project data including papers, reviews, and analysis in CSV format
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="h-full flex flex-col">
+      <PageHeader 
+        icon={Download}
+        title="Export Project Data"
+      />
+
+      <div className="flex-1 px-6 py-6">
+        <div className="max-w-screen-xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle>Export Options</CardTitle>
+              <CardDescription>Download your project data in various formats</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <h3 className="text-sm font-medium mb-2">Complete Project Export</h3>
+                <div className="space-y-2">
+                  <Button
+                    onClick={handleExport}
+                    disabled={exporting}
+                    className="w-full sm:w-auto"
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    {exporting ? 'Exporting...' : 'Export Project Data'}
+                  </Button>
+                  <p className="text-sm text-gray-500">
+                    Exports all project data including papers, reviews, and analysis in CSV format
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };
