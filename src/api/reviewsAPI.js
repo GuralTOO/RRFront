@@ -1,5 +1,101 @@
 import { supabase } from "@/supabaseClient";
 
+
+export async function generateReviewQueue(projectId, queueSize = 10, stage_name = 'abstract_screening') {
+    console.log('Starting generateReviewQueue with:', { projectId, queueSize, stage_name });
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('No user logged in');
+    console.log('Current user:', user.id);
+
+    // First, get the stage_id for the given stage
+    const { data: stageData, error: stageError } = await supabase
+        .from('stages')
+        .select('stage_id')
+        .eq('stage_name', stage_name)
+        .single();
+
+    if (stageError) {
+        console.error('Error fetching stage:', stageError);
+        throw new Error('Failed to get stage information');
+    }
+    console.log('Found stage:', stageData);
+
+    // Get already reviewed papers
+    const { data: reviewedPapers } = await supabase
+        .from('paper_reviews')
+        .select('paper_id')
+        .eq('reviewer_id', user.id)
+        .eq('project_id', projectId)
+        .eq('stage_id', stageData.stage_id);
+
+    // Get papers with decisions
+    const { data: decidedPapers } = await supabase
+        .from('paper_decisions')
+        .select('paper_id')
+        .eq('project_id', projectId)
+        .eq('stage_id', stageData.stage_id);
+
+    // Extract paper IDs from the results
+    const reviewedPaperIds = reviewedPapers?.map(p => p.paper_id) || [];
+    const decidedPaperIds = decidedPapers?.map(p => p.paper_id) || [];
+    
+    // Combine all paper IDs to exclude
+    const excludePaperIds = [...new Set([...reviewedPaperIds, ...decidedPaperIds])];
+
+    console.log('Papers to exclude:', excludePaperIds.length);
+
+    // Get eligible papers
+    let query = supabase
+        .from('project_papers')
+        .select(`
+            paper_id,
+            relevancy_score,
+            papers!inner (
+                title,
+                abstract,
+                authors,
+                publication_date
+            )
+        `)
+        .eq('project_id', projectId)
+        .order('relevancy_score', { ascending: false })
+        .limit(queueSize);
+
+    // Only add the not-in filter if there are papers to exclude
+    if (excludePaperIds.length > 0) {
+        query = query.not('paper_id', 'in', `(${excludePaperIds.join(',')})`);
+    }
+
+    const { data: eligiblePapers, error: eligibleError } = await query;
+
+    if (eligibleError) {
+        console.error('Error fetching eligible papers:', eligibleError);
+        throw new Error('Failed to fetch eligible papers');
+    }
+
+    console.log('Query executed, found papers:', eligiblePapers?.length || 0);
+
+    if (!eligiblePapers || eligiblePapers.length === 0) {
+        console.log('No eligible papers found');
+        return [];
+    }
+
+    // Format the response
+    const papers = eligiblePapers.map(paper => ({
+        paper_id: paper.paper_id,
+        title: paper.papers.title,
+        abstract: paper.papers.abstract,
+        authors: paper.papers.authors,
+        publication_date: paper.papers.publication_date,
+        relevancy_score: paper.relevancy_score,
+        project_id: projectId
+    }));
+
+    console.log('Returning formatted papers:', papers.length);
+    return papers;
+}
+
 export async function addReview(projectId, paperId, decision, stage_name) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('No user logged in');

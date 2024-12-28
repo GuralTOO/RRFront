@@ -6,7 +6,7 @@ import SettingsTab from '../../../Experiment/pages/Project/SettingsTab';
 
 const ProjectSettingsPage = () => {
   const { projectId } = useParams();
-  
+
   return (
     <div className="h-full flex flex-col">
       <PageHeader 
