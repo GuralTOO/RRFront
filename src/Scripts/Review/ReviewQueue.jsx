@@ -47,7 +47,7 @@ const ReviewQueue = ({
                 </div>
                 
                 <div className="ml-3 flex-1 flex items-center overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <ChevronLeft className="h-4 w-4 text-gray-400 shrink-0" />
+                    {/* <ChevronLeft className="h-4 w-4 text-gray-400 shrink-0" /> */}
                     <span className="ml-2 font-medium text-sm text-gray-800">
                         Review Queue
                     </span>
