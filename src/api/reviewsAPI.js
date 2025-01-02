@@ -309,6 +309,203 @@ export async function listConflicts(projectId) {
 
 }
 
+
+/*
+Mock functions for testing
+*/
+
+// Mock data generator for conflicts
+const generateMockConflicts = (count = 5) => {
+    const samplePaperTitles = [
+      "Machine Learning Applications in Healthcare: A Systematic Review",
+      "Deep Learning for Medical Image Analysis: Current Trends and Future Directions",
+      "Artificial Intelligence in Drug Discovery: Opportunities and Challenges",
+      "Natural Language Processing for Clinical Text: A Comprehensive Survey",
+      "The Impact of Neural Networks on Medical Diagnosis: A Meta-Analysis",
+      "Robotic Surgery Systems: A Review of Current Technologies",
+      "Predictive Analytics in Patient Care: Systematic Review and Meta-Analysis",
+      "Blockchain Technology in Healthcare: Current Applications and Future Prospects",
+      "Big Data Analytics for Healthcare: Challenges and Opportunities",
+      "Internet of Medical Things (IoMT): A Systematic Literature Review"
+    ];
+  
+    return Array.from({ length: count }, (_, index) => {
+      // Generate a date within the last 30 days
+      const date = new Date();
+      date.setDate(date.getDate() - Math.floor(Math.random() * 30));
+  
+      return {
+        conflict_id: `conf-${Math.random().toString(36).substr(2, 9)}`,
+        created_at: date.toISOString(),
+        project_id: "proj-123", // This would match the projectId parameter in real usage
+        paper_id: `paper-${Math.random().toString(36).substr(2, 9)}`,
+        paper_title: samplePaperTitles[Math.floor(Math.random() * samplePaperTitles.length)],
+        // Add any additional fields that might be needed for testing
+        reviewers: [
+          { id: "rev1", decision: "accept" },
+          { id: "rev2", decision: "reject" }
+        ]
+      };
+    });
+  };
+  
+// Mock implementation of listConflicts
+export async function mockListConflicts(projectId) {
+// Simulate network delay
+await new Promise(resolve => setTimeout(resolve, 1000));
+
+// Randomly fail sometimes to test error handling (10% chance)
+if (Math.random() < 0.1) {
+    throw new Error("Random mock API error");
+}
+
+// Generate between 0 and 8 conflicts
+const numberOfConflicts = Math.floor(Math.random() * 9);
+
+return generateMockConflicts(numberOfConflicts);
+}
+
+
+
+
+
+// Mock data generators and API functions for conflicts management
+
+// Mock data generators and API functions for conflicts management
+
+// Function to get conflicts overview by stage
+export async function getConflictsOverview(projectId) {
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+  
+    // Generate consistent numbers for abstract screening
+    const abstractActive = Math.floor(Math.random() * 10);
+    const abstractResolved = Math.floor(Math.random() * 50);
+    const abstractTotal = abstractActive + abstractResolved;
+  
+    // Generate consistent numbers for full text screening
+    const fullTextActive = Math.floor(Math.random() * 8);
+    const fullTextResolved = Math.floor(Math.random() * 30);
+    const fullTextTotal = fullTextActive + fullTextResolved;
+  
+    return {
+      abstract_screening: {
+        stage_id: "stage-1",
+        active_conflicts: abstractActive,
+        resolved_conflicts: abstractResolved,
+        total_conflicts: abstractTotal,
+      },
+      full_text_screening: {
+        stage_id: "stage-2",
+        active_conflicts: fullTextActive,
+        resolved_conflicts: fullTextResolved,
+        total_conflicts: fullTextTotal,
+      }
+    };
+  }
+  
+// Function to get conflict history for a specific stage
+export async function getConflictHistory(projectId, stageId, page = 1, pageSize = 10) {
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const samplePapers = [
+        {
+        title: "Deep Learning Applications in Medical Imaging",
+        authors: ["Smith, J.", "Johnson, M.", "Williams, K."],
+        publication_date: "2023-06-15"
+        },
+        {
+        title: "AI-Driven Diagnostic Tools: A Systematic Review",
+        authors: ["Brown, R.", "Davis, L."],
+        publication_date: "2023-08-22"
+        },
+        {
+        title: "Machine Learning in Clinical Decision Support",
+        authors: ["Wilson, A.", "Taylor, S.", "Martinez, J."],
+        publication_date: "2023-07-10"
+        }
+    ];
+
+    const resolvers = [
+        { id: "user1", username: "Dr. Sarah Wilson" },
+        { id: "user2", username: "Prof. Michael Chang" },
+        { id: "user3", username: "Dr. James Martinez" }
+    ];
+
+    // Generate random resolved conflicts
+    const conflicts = Array.from({ length: 15 }, (_, i) => {
+        const paper = samplePapers[Math.floor(Math.random() * samplePapers.length)];
+        const resolver = resolvers[Math.floor(Math.random() * resolvers.length)];
+        const resolution = Math.random() > 0.5 ? 'accept' : 'reject';
+        const date = new Date();
+        date.setDate(date.getDate() - Math.floor(Math.random() * 30));
+
+        return {
+        conflict_id: `conf-${i}`,
+        paper_id: `paper-${i}`,
+        project_id: projectId,
+        stage_id: stageId,
+        paper_title: paper.title,
+        paper_authors: paper.authors,
+        publication_date: paper.publication_date,
+        resolution,
+        resolution_reason: resolution === 'accept' 
+            ? "Paper meets inclusion criteria and methodology is sound"
+            : "Study design does not match inclusion criteria",
+        resolver: resolver,
+        resolution_date: date.toISOString(),
+        };
+    });
+
+    // Sort by resolution date descending
+    conflicts.sort((a, b) => new Date(b.resolution_date) - new Date(a.resolution_date));
+
+    // Simulate pagination
+    const start = (page - 1) * pageSize;
+    const paginatedConflicts = conflicts.slice(start, start + pageSize);
+
+    return {
+        conflicts: paginatedConflicts,
+        total: conflicts.length,
+        page,
+        pageSize,
+        totalPages: Math.ceil(conflicts.length / pageSize)
+    };
+}
+
+// Function to check if user can resolve conflicts
+export async function canResolveConflicts(projectId) {
+    // In real implementation, this would check the user's role in the project
+    await new Promise(resolve => setTimeout(resolve, 200));
+    return Math.random() > 0.3; // 70% chance of being able to resolve conflicts
+    }
+
+    // Function to start conflict resolution session
+    export async function startConflictResolution(projectId, stageId) {
+    // In real implementation, this would create or resume a conflict resolution session
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    if (Math.random() > 0.1) { // 90% success rate
+        return {
+        success: true,
+        sessionId: `session-${Math.random().toString(36).substr(2, 9)}`,
+        nextUrl: `/p/${projectId}/review/conflicts`
+        };
+    } else {
+        throw new Error("Failed to start conflict resolution session");
+    }
+}
+
+
+/*
+Mock functions end
+*/
+
+
+
+
+
 export async function getReviews(project_id, paper_id) {
 
     // retrieve all of the reviews for the paper in the project from the paper_reviews table

@@ -31,6 +31,7 @@ import ProjectSettingsPage from './Scripts/Project/Pages/Settings/SettingsPage';
 import PapersPage from './Scripts/Project/Pages/Papers/PapersPage';
 
 import AppLayout from './Scripts/layout/AppLayout';
+import ConflictsPage from './Scripts/Project/Pages/Conflicts/ConflictsPage';
 
 function App() {
     const [session, setSession] = useState(null)
@@ -100,7 +101,7 @@ function App() {
                 <Route path="abstract" element={<TinderForAbstracts />} />
                 <Route path="fulltext" element={<FullTextReview />} />
                 <Route path="extraction" element={<DataExtractionPage />} />
-                <Route path="conflicts" element={<TinderForAbstractConflicts />} />
+                <Route path="conflicts" element={<ConflictsPage />} />
               </Route>
 
               {/* Project Management */}
