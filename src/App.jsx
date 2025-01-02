@@ -9,7 +9,7 @@ import Auth from './Auth'
 import InterestForm from './Scripts/InterestForm/InterestForm';
 
 // Outside Project Pages
-import AllProjects from './Scripts/Experiment/Pages/AllProjects';
+import AllProjects from './Scripts/Experiment/pages/AllProjects';
 import SearchPage from './Scripts/Search/SearchPage';
 import DocumentationPage from './Scripts/Documentation/DocumentationPage';
 import UserSettingsPage from './Scripts/Settings/UserSettingsPage';
@@ -17,8 +17,8 @@ import UserSettingsPage from './Scripts/Settings/UserSettingsPage';
 // Project Pages
 import ProjectHome from './Scripts/Project/Pages/ProjectHome.jsx';
 import FullTextViewer from './Scripts/Document/FullTextViewer';
-import TinderForAbstracts from './Scripts/Experiment/Pages/Project/Tinder/TinderForAbstracts';
-import FullTextReview from './Scripts/Experiment/Pages/Project/FullText/FullTextReview';
+import TinderForAbstracts from './Scripts/Experiment/pages/Project/Tinder/TinderForAbstracts';
+import FullTextReview from './Scripts/Experiment/pages/Project/FullText/FullTextReview';
 import DataExtractionPage from './Scripts/Project/Pages/DataExtraction/DataExtractionPage';
 import CriteriaPage from './Scripts/Project/Pages/Criteria/CriteriaPage';
 import ImportPage from './Scripts/Project/Pages/Import/ImportPage';
