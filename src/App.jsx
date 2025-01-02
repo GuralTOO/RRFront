@@ -3,9 +3,6 @@ import { BrowserRouter as Router, Route, Navigate, Routes, useNavigate, useLocat
 import { supabase } from './supabaseClient'
 import './App.css'
 
-// Layout Components
-import Navigation2 from './Scripts/Experiment/Navigation2';
-
 // Public Pages
 import LandingPage5 from './Scripts/LandingPage/LandingPage5';
 import Auth from './Auth'
@@ -20,13 +17,12 @@ import UserSettingsPage from './Scripts/Settings/UserSettingsPage';
 // Project Pages
 import ProjectHome from './Scripts/Project/Pages/ProjectHome.jsx';
 import FullTextViewer from './Scripts/Document/FullTextViewer';
-import TinderForAbstracts from './Scripts/Experiment/pages/Project/Tinder/TinderForAbstracts';
-import FullTextReview from './Scripts/Experiment/pages/Project/FullText/FullTextReview';
-import DataExtractionPage from './Scripts/Project/pages/DataExtraction/DataExtractionPage';
-import TinderForAbstractConflicts from './Scripts/Experiment/pages/Project/Tinder/TinderForAbstractConflicts';
-import CriteriaPage from './Scripts/Project/pages/Criteria/CriteriaPage';
-import ImportPage from './Scripts/Project/pages/Import/ImportPage';
-import ExportPage from './Scripts/Project/pages/Export/ExportPage';
+import TinderForAbstracts from './Scripts/Experiment/Pages/Project/Tinder/TinderForAbstracts';
+import FullTextReview from './Scripts/Experiment/Pages/Project/FullText/FullTextReview';
+import DataExtractionPage from './Scripts/Project/Pages/DataExtraction/DataExtractionPage';
+import CriteriaPage from './Scripts/Project/Pages/Criteria/CriteriaPage';
+import ImportPage from './Scripts/Project/Pages/Import/ImportPage';
+import ExportPage from './Scripts/Project/Pages/Export/ExportPage';
 import ProjectSettingsPage from './Scripts/Project/Pages/Settings/SettingsPage';
 import PapersPage from './Scripts/Project/Pages/Papers/PapersPage';
 
