@@ -9,7 +9,7 @@ import Auth from './Auth'
 import InterestForm from './Scripts/InterestForm/InterestForm';
 
 // Outside Project Pages
-import AllProjects from './Scripts/Experiment/pages/AllProjects';
+import AllProjects from './Scripts/Experiment/Pages/AllProjects';
 import SearchPage from './Scripts/Search/SearchPage';
 import DocumentationPage from './Scripts/Documentation/DocumentationPage';
 import UserSettingsPage from './Scripts/Settings/UserSettingsPage';
