@@ -331,9 +331,31 @@ export const uploadImportFile = async (file, projectId, fileType) => {
             throw error;
         }
 
-        // console.log('File uploaded successfully:', data);
-        // console.log('The file has been uploaded to path:', filePath);
+        // Save the data to the database:
+        // Get the current user's ID
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
 
+        // Create the initial import file record
+        const { data: importRecord, error: importError } = await supabase
+            .from('reference_imports')
+            .insert({
+                project_id: projectId,
+                user_id: user.id,
+                file_bucket: 'csv-uploads',
+                file_path: filePath,
+                // Initialize counters to 0 - they will be updated by the cloud function
+                deduplication_total: 0,
+                deduplication_file: 0,
+                deduplication_project: 0,
+                paper_total: 0,
+                paper_new: 0
+            })
+            .select()
+            .single();
+
+        if (importError) throw importError;
+        console.log('Import record created:', importRecord);
 
         const cloudFunctionUrl = 'https://us-central1-exp001-429822.cloudfunctions.net/reference-importer';
 
@@ -347,6 +369,7 @@ export const uploadImportFile = async (file, projectId, fileType) => {
                 bucket: 'csv-uploads',
                 filePath,
                 fileType
+                // add the import_id to the request body
             })
         });
 
