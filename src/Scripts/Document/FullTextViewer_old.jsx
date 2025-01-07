@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,9 +13,8 @@ import EnhancedNotes from './EnhancedNotes';
 import PDFUploader from '../Experiment/pages/Project/FullText/PDFUploader'
 import {getPaperNotes, savePaperNotes} from '../../api/papersApi';
 import PageHeader from '../Project/components/PageHeader';
-import PDFViewer from './pdf-viewer/PDFViewer';
 
-const FullTextViewer = () => {
+const FullTextViewer_old = () => {
     const navigate = useNavigate();
     const { projectId, paperId } = useParams();
     const { toast } = useToast();
@@ -24,41 +23,6 @@ const FullTextViewer = () => {
     const [paperDetails, setPaperDetails] = useState(null);
     const [notes, setNotes] = useState('');
 
-    // const [highlights, setHighlights] = useState([]);
-    const highlights = [
-        {
-          pageNumber: 1,
-          x1: 100,  // top-left X
-          y1: 150,  // top-left Y
-          x2: 200,  // bottom-right X
-          y2: 170,  // bottom-right Y
-          color: "rgba(255, 0, 0, 0.2)" // translucent red
-        },
-        {
-          pageNumber: 1,
-          x1: 250,
-          y1: 300,
-          x2: 400,
-          y2: 320,
-          color: "rgba(255, 0, 0, 0.2)" // translucent red
-        },
-        {
-          pageNumber: 2,
-          x1: 50,
-          y1: 100,
-          x2: 180,
-          y2: 120,
-          color: "rgba(255, 0, 0, 0.2)" // translucent red
-        },
-        {
-          pageNumber: 2,
-          x1: 60,
-          y1: 200,
-          x2: 220,
-          y2: 220, // no color specified, uses default
-          color: "rgba(255, 0, 0, 0.2)" // translucent red
-        }
-      ];
 
     // Create debounced save function
     const debouncedSave = useCallback(
@@ -89,20 +53,6 @@ const FullTextViewer = () => {
                 console.log("Full text URL:", details.full_text_url); // Add this log
                 setPaperDetails(details);
 
-                // Transform highlight data if needed
-                if (details.highlights) {
-                    setHighlights(details.highlights.map(h => ({
-                        pageNumber: h.page_number,
-                        coordinates: {
-                            x1: h.start_x,
-                            y1: h.start_y,
-                            x2: h.end_x,
-                            y2: h.end_y
-                        },
-                        color: h.color || '#ffeb3b'
-                    })));
-                }
-
                 const noteData = await getPaperNotes(projectId, paperId);
                 setNotes(noteData?.content || '');
 
@@ -120,13 +70,6 @@ const FullTextViewer = () => {
 
         loadPaperDetails();
     }, [projectId, paperId]);
-
-
-    const handlePageChange = (pageNumber) => {
-        console.log(`Page changed to ${pageNumber}`);
-    };
-
-    const containerRef = useRef(null);
 
 
     return (
@@ -162,13 +105,16 @@ const FullTextViewer = () => {
                                         <p className="text-red-600">{error}</p>
                                     </div>
                                 ) : paperDetails?.full_text_url ? (
-                                    <div ref={containerRef} className="h-full">
-                                        <PDFViewer
-                                            pdfUrl={paperDetails.full_text_url}
-                                            highlightData={highlights}
-                                            containerWidth={containerRef.current?.clientWidth}
-                                        />
-                                    </div>
+                                    <iframe
+                                        src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(
+                                            paperDetails.full_text_url.replace(/[\r\n\t]/g, '')
+                                        )}`}
+                                        className="w-full h-full border-0"
+                                        title="PDF Viewer"
+                                        onError={(e) => {
+                                            console.error("PDF iframe load error:", e);
+                                        }}
+                                    />
                                 ) : (
                                     <PDFUploader 
                                         projectId={projectId}
@@ -252,4 +198,4 @@ const FullTextViewer = () => {
     );
 };
 
-export default FullTextViewer;
+export default FullTextViewer_old;

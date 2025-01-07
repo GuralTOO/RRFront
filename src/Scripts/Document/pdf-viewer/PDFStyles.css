@@ -1,0 +1,48 @@
+/* PDFStyles.css */
+.pdf-text-layer {
+  position: absolute;
+  text-align: initial;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  opacity: 0.2;
+  line-height: 1;
+  user-select: text;
+}
+
+.pdf-text-layer > span {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+/* Text layer animation */
+.pdf-text-layer {
+  opacity: 0;
+  animation: fadeIn 0.2s ease-in-out forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.2;
+  }
+}
+
+/* Selection color - modify this to change the highlight color */
+.pdf-text-layer ::selection {
+  background: rgba(25, 118, 210, 0.85);  /* Increased opacity from 0.3 to 0.6 */
+  color: transparent;
+}
+
+.pdf-text-layer ::-moz-selection {
+  background: rgba(25, 118, 210, 0.3); /* Light blue color for Firefox */
+  color: transparent;
+}

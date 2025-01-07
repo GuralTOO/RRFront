@@ -28,6 +28,7 @@ import PapersPage from './Scripts/Project/Pages/Papers/PapersPage';
 
 import AppLayout from './Scripts/layout/AppLayout';
 import ConflictsPage from './Scripts/Project/Pages/Conflicts/ConflictsPage';
+import FullTextViewer_old from './Scripts/Document/FullTextViewer_old';
 
 function App() {
     const [session, setSession] = useState(null)
