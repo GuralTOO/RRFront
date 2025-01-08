@@ -561,7 +561,8 @@ export const getPaperFullTextDetails = async (projectId, paperId) => {
         const paper = {
             paper_id: paperData.papers.paper_id,
             title: paperData.papers.title,
-            authors: Array.isArray(paperData.papers.authors) ? paperData.papers.authors.join(', ') : paperData.papers.authors,
+            // authors: Array.isArray(paperData.papers.authors) ? paperData.papers.authors.join(', ') : paperData.papers.authors,
+            authors: paperData.papers.authors,
             publication_date: paperData.papers.publication_date,
             abstract: paperData.papers.abstract,
             comments: paperData.comments || '',

@@ -24,6 +24,23 @@ const FullTextViewer = () => {
     const [paperDetails, setPaperDetails] = useState(null);
     const [notes, setNotes] = useState('');
 
+    const formatAuthorName = (authorString) => {
+        const [lastName, firstName] = authorString.split(',').map(part => part.trim());
+        return `${firstName} ${lastName}`;
+    };
+    
+    const formatAuthors = (authors) => {
+        if (!authors) return '';
+        if (Array.isArray(authors)) {
+            return authors.map(author => formatAuthorName(author)).join(', ');
+        }
+        
+        // If it's a single string containing multiple authors separated by semicolons
+        return authors.split(';')
+            .map(author => formatAuthorName(author.trim()))
+            .join(', ');
+    };
+
     // const [highlights, setHighlights] = useState([]);
     const highlights = [
         {
@@ -86,7 +103,6 @@ const FullTextViewer = () => {
             setLoading(true);
             try {
                 const details = await getPaperFullTextDetails(projectId, paperId);
-                console.log("Full text URL:", details.full_text_url); // Add this log
                 setPaperDetails(details);
 
                 // Transform highlight data if needed
@@ -210,10 +226,10 @@ const FullTextViewer = () => {
                                         {paperDetails?.title}
                                     </h2>
                                     <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 mt-2">
-                                        <div className="flex items-center gap-1">
-                                            <UserOutlined className="h-4 w-4" />
-                                            <span>{paperDetails?.authors}</span>
-                                        </div>
+                                    <div className="flex items-center gap-1">
+                                        <UserOutlined className="h-4 w-4" />
+                                        <span>{formatAuthors(paperDetails?.authors)}</span>
+                                    </div>
                                         <div className="h-3 w-px bg-gray-300 mx-2" />
                                         <div className="flex items-center gap-1">
                                             <CalendarOutlined className="h-4 w-4" />

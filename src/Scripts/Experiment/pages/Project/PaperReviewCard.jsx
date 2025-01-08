@@ -11,6 +11,22 @@ const PaperReviewCard = ({
     showRelevancyScore = true,
     additionalContent = null
 }) => {
+    const formatAuthorName = (authorString) => {
+        const [lastName, firstName] = authorString.split(',').map(part => part.trim());
+        return `${firstName} ${lastName}`;
+    };
+
+    const formatAuthors = (authors) => {
+        if (typeof authors === 'string') {
+            // If it's a semicolon-separated string, split it first
+            return authors.split(';')
+                .map(author => formatAuthorName(author.trim()))
+                .join(', ');
+        }
+        // If it's already an array
+        return authors.map(formatAuthorName).join(', ');
+    };
+
     const getButtonStyles = (variant) => {
         switch (variant) {
             case 'destructive':
@@ -71,7 +87,7 @@ const PaperReviewCard = ({
                         <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
                             <div className="flex items-center gap-1">
                                 <UserOutlined className="h-4 w-4" />
-                                <span>{paper.authors}</span>
+                                <span>{formatAuthors(paper.authors)}</span>
                             </div>
                             <div className="h-3 w-px bg-gray-300 mx-2" />
                             <div className="flex items-center gap-1">
@@ -121,6 +137,7 @@ const PaperReviewCard = ({
 };
 
 export default PaperReviewCard;
+
 
 // Example Layout Component
 const PaperReviewLayout = ({ children, loading }) => {
