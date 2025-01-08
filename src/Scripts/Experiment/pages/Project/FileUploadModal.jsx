@@ -40,7 +40,7 @@ const FileUploadModal = ({ projectId, onUploadComplete }) => {
     { id: "nbib", name: "PubMed NBIB", extension: ".nbib", mimeType: "application/octet-stream" },
     { id: "covidence", name: "Covidence CSV", extension: ".csv", mimeType: "text/csv" },
     // { id: "endnote", name: "EndNote", extension: ".enw", mimeType: "application/x-endnote-refer" },
-    // { id: "ris", name: "RIS", extension: ".ris", mimeType: "application/x-research-info-systems" }
+    { id: "ris", name: "RIS", extension: ".ris", mimeType: "application/x-research-info-systems" }
   ];
 
   const handleFileTypeChange = (newFileType) => {

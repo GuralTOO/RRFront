@@ -80,14 +80,17 @@ const DocumentRow = ({ doc, projectId, index, expandedIndex, toggleExpand }) => 
     const [showCommentBox, setShowCommentBox] = useState(false);
     const [comment, setComment] = useState('');
     const navigate = useNavigate();
-
-    // full-text-update
     const [showFullText, setShowFullText] = useState(false);
+
+    const formatAuthorName = (authorString) => {
+        const [lastName, firstName] = authorString.split(',').map(part => part.trim());
+        return `${firstName} ${lastName}`;
+    };
 
     const truncate = (text, maxLength) => {
         if (text.length <= maxLength) return text;
         return text.slice(0, maxLength) + '...';
-      };
+    };
       
     const handleToggleExpand = () => {
         setIsExpanded(!isExpanded);
@@ -102,14 +105,16 @@ const DocumentRow = ({ doc, projectId, index, expandedIndex, toggleExpand }) => 
         setShowCommentBox(false);
     };
 
+    const formattedAuthors = doc.authors.map(formatAuthorName);
+
     return (
         <>
             <TableRow className={`transition-all duration-200 ${isExpanded ? 'bg-gray-50' : ''}`}>
                 <TableCell className="w-1/3 max-w-0 truncate" title={doc.title}>
                     {truncate(doc.title, 50)}
                 </TableCell>
-                <TableCell className="w-1/4 max-w-0 truncate" title={doc.authors}>
-                    {truncate(doc.authors, 50)}
+                <TableCell className="w-1/4 max-w-0 truncate" title={formattedAuthors.join(', ')}>
+                    {truncate(formattedAuthors.join(', '), 50)}
                 </TableCell>
                 <TableCell className="w-1/6">{doc.publication_date}</TableCell>
                 <TableCell className="w-1/6">
@@ -141,10 +146,10 @@ const DocumentRow = ({ doc, projectId, index, expandedIndex, toggleExpand }) => 
                                     <p className="text-sm">{doc.title}</p>
                                 </div>
                             )}
-                            {doc.authors.length > 50 && (
+                            {formattedAuthors.length > 50 && (
                                 <div>
                                     <h4 className="text-sm font-medium text-gray-500">All Authors</h4>
-                                    <p className="text-sm">{doc.authors}</p>
+                                    <p className="text-sm">{formattedAuthors.join(', ')}</p>
                                 </div>
                             )}
                             <div className="max-w-3xl">
@@ -185,14 +190,12 @@ const DocumentRow = ({ doc, projectId, index, expandedIndex, toggleExpand }) => 
                                         <FileTextIcon className="mr-2 h-4 w-4" />
                                         View Full Text
                                     </Button>
-
                                 </div>
                             )}
                         </div>
                     </TableCell>
                 </TableRow>
             )}
-
         </>
     );
 };
