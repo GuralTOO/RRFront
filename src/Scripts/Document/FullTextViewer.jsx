@@ -41,7 +41,7 @@ const FullTextViewer = () => {
             .join(', ');
     };
 
-    // const [highlights, setHighlights] = useState([]);
+    // const [highlights, setHighlights] = useS qtate([]);
     const highlights = [
         {
           pageNumber: 1,
@@ -60,6 +60,22 @@ const FullTextViewer = () => {
           color: "rgba(255, 0, 0, 0.2)" // translucent red
         },
         {
+            pageNumber: 1,
+            x1: 100,  // top-left X
+            y1: 350,  // top-left Y
+            x2: 200,  // bottom-right X
+            y2: 370,  // bottom-right Y
+            color: "rgba(255, 0, 0, 0.2)" // translucent red
+        },
+        {
+            pageNumber: 1,
+            x1: 250,
+            y1: 500,
+            x2: 400,
+            y2: 920,
+            color: "rgba(255, 0, 0, 1)" // translucent red
+        },
+        {
           pageNumber: 2,
           x1: 50,
           y1: 100,
@@ -74,6 +90,38 @@ const FullTextViewer = () => {
           x2: 220,
           y2: 220, // no color specified, uses default
           color: "rgba(255, 0, 0, 0.2)" // translucent red
+        },
+        {
+          pageNumber: 3,
+          x1: 120,
+          y1: 180,
+          x2: 220,
+          y2: 200,
+          color: "rgba(128, 0, 128, 0.2)" // translucent purple
+        },
+        {
+          pageNumber: 3,
+          x1: 300,
+          y1: 400,
+          x2: 450,
+          y2: 420,
+          color: "rgba(128, 0, 128, 0.2)" // translucent purple
+        },
+        {
+          pageNumber: 4,
+          x1: 80,
+          y1: 150,
+          x2: 200,
+          y2: 170,
+          color: "rgba(128, 0, 128, 0.2)" // translucent purple
+        },
+        {
+          pageNumber: 4,
+          x1: 220,
+          y1: 250,
+          x2: 350,
+          y2: 270,
+          color: "rgba(128, 0, 128, 0.2)" // translucent purple
         }
       ];
 

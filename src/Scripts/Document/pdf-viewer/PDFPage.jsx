@@ -132,7 +132,7 @@ const PDFPage = ({ page, scale, containerWidth, highlightData = [], onError }) =
                     transform,
                     transformOrigin: 'top left',
                     transition: transform ? 'transform 0.1s ease-out' : 'none'
-                }} 
+                }}
                 className="relative"
             >
                 <canvas 
@@ -155,7 +155,8 @@ const PDFPage = ({ page, scale, containerWidth, highlightData = [], onError }) =
                                 top: highlight.y1 * currentScale,
                                 width: (highlight.x2 - highlight.x1) * currentScale,
                                 height: (highlight.y2 - highlight.y1) * currentScale,
-                                backgroundColor: highlight.color || 'rgba(255, 255, 0, 0.3)'
+                                backgroundColor: highlight.color || 'rgba(255, 255, 0, 0.3)',
+                                mixBlendMode: 'multiply'
                             }}
                         />
                     );

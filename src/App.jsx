@@ -5,6 +5,7 @@ import './App.css'
 
 // Public Pages
 import LandingPage5 from './Scripts/LandingPage/LandingPage5';
+import LandingPage from './Scripts/LandingPage/LandingPage';
 import Auth from './Auth'
 import InterestForm from './Scripts/InterestForm/InterestForm';
 
@@ -70,8 +71,14 @@ function App() {
 
   return (
     <div className="App">
+
       <Routes>
         {/* Public Routes */}
+        <Route path="/" element={
+          <ThemeProvider>
+            <LandingPage />
+          </ThemeProvider>            
+        } />
         <Route path="/" element={<LandingPage5 />} />
         <Route path="/hiddenlogin" element={<Auth />} />
         <Route path="/login" element={<InterestForm />} />
@@ -115,13 +122,15 @@ function App() {
         )}
       </Routes>
     </div>
-  )
+  );
 }
+
+import { ThemeProvider } from './Scripts/LandingPage/components/ThemeContext';
 
 function AppWrapper() {
   return (
     <Router>
-      <App />
+        <App />
     </Router>
   )
 }

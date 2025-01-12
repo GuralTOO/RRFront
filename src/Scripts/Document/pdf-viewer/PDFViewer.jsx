@@ -158,7 +158,7 @@ import './PDFStyles.css';
 // Set the workerSrc
 GlobalWorkerOptions.workerSrc = pdfWorker;
 
-const PDFViewer = ({ pdfUrl, containerWidth }) => {
+const PDFViewer = ({ pdfUrl, containerWidth, highlightData }) => {
   const [pdf, setPdf] = useState(null);
   const [pages, setPages] = useState([]);
   const [error, setError] = useState(null);
@@ -167,18 +167,10 @@ const PDFViewer = ({ pdfUrl, containerWidth }) => {
   const [pdfDimensions, setPdfDimensions] = useState(null);
   const pageContainerRef = useRef(null);
 
-  // Original highlight coordinates
-  const originalHighlights = [
-    {
-      pageNumber: 1,
-      x1: 1438,
-      y1: 1478,
-      x2: 1512,
-      y2: 1502,
-      color: "rgba(255, 255, 0, 0.3)"
-    }
-    // ... other highlights
-  ];
+
+
+  // Set original highlight coordinates to highlightData
+  const originalHighlights = highlightData;
 
   // Function to scale coordinates based on PDF dimensions
   const scaleHighlights = useCallback((highlights, viewport) => {
