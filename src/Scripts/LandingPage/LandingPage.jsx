@@ -83,7 +83,7 @@ const LandingPage = () => {
               Systematic Reviews
               <span className={`block mt-2 ${
                 theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
-              }`}>Done in a week</span>
+              }`}>Accelerated</span>
             </motion.h1>
             <p className={`text-xl mb-8 ${
               theme === 'dark' ? 'text-neutral-400' : 'text-gray-600'
@@ -124,8 +124,6 @@ const LandingPage = () => {
           <div className="mt-16 max-w-6xl mx-auto">
             <SystematicReviewFlow />
           </div>
-
-
 
         </div>
       </section>
