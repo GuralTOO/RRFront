@@ -365,11 +365,11 @@ export const uploadImportFile = async (file, projectId, fileType) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                importId: importRecord.id,
                 projectId,
                 bucket: 'csv-uploads',
                 filePath,
                 fileType
-                // add the import_id to the request body
             })
         });
 

@@ -183,20 +183,3 @@ const LandingPage5 = () => {
 };
 
 export default LandingPage5;
-
-/*
-            <motion.h1 
-              className="text-6xl font-bold mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              Systematic Reviews
-              <span className="block text-blue-400 mt-2">Done in a week</span>
-            </motion.h1>
-            <p className="text-xl text-neutral-400 mb-8">
-              RapidReview is an AI accelerated systematic review platform.
-              Follow the rules and requirements of systematic reviews with the help of validated AI algorithms for screening
-              and instant data extraction.
-            </p>
-            */
