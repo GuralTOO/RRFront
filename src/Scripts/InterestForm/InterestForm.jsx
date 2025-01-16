@@ -131,7 +131,7 @@ export default function InterestForm() {
                         Join the Research Revolution
                     </h2>
                     <p className="mt-2 text-sm text-gray-600">
-                        RapidReview is transforming literature reviews. Be among the first to experience it!
+                        RapidReview is accelerating systematic reviews. Be among the first to experience it!
                     </p>
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

@@ -79,7 +79,7 @@ function App() {
             <LandingPage />
           </ThemeProvider>            
         } />
-        <Route path="/" element={<LandingPage5 />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/hiddenlogin" element={<Auth />} />
         <Route path="/login" element={<InterestForm />} />
 
