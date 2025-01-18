@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DocumentRow from './DocumentRow';
 import { getFilteredPapers } from '@/api/papersApi';
-import AddPaperModal from './Experiment/pages/Project/AddPaperModal';
 import { addPaper } from '@/api/papersApi';
 import { Spin } from 'antd';
 import {
@@ -21,7 +20,6 @@ import {
     PaginationNext,
     PaginationPrevious
 } from "@/components/ui/pagination";
-import FileUploadModal from './Experiment/pages/Project/FileUploadModal';
 
 const DocumentList = ({ projectId }) => {
     const [sortConfig, setSortConfig] = useState({ field: 'created_at', ascending: false });
@@ -154,10 +152,6 @@ const DocumentList = ({ projectId }) => {
         <div className="space-y-4">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-2xl font-semibold">Affiliated Papers</h3>
-                <div className="space-x-2">
-                    <AddPaperModal onAddPaper={handleAddPaper} />
-                    <FileUploadModal projectId={projectId} onUploadComplete={handleFileUploadComplete} />
-                </div>
             </div>
 
 

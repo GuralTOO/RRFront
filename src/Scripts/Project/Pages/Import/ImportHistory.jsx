@@ -112,7 +112,7 @@ const ImportCard = ({ importRecord }) => {
     );
 };
 
-const ImportHistory = ({ projectId }) => {
+const ImportHistory = ({ projectId, refreshTrigger }) => {
     const [imports, setImports] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -132,7 +132,7 @@ const ImportHistory = ({ projectId }) => {
         };
 
         loadImports();
-    }, [projectId]);
+    }, [projectId, refreshTrigger]);
 
     if (loading) {
         return (

@@ -134,8 +134,10 @@ const FileUploadModal = ({ projectId, onUploadComplete }) => {
       if (!newOpen) resetModal();
     }}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="text-sm py-1.5 px-3 h-9">
-          <Upload className="h-3 w-5" />
+      <Button 
+          className="bg-black text-white hover:bg-gray-800 text-sm px-4 h-10 font-medium"
+        >
+          <Upload className="h-4 w-4 mr-2" />
           Import Papers
         </Button>
       </DialogTrigger>

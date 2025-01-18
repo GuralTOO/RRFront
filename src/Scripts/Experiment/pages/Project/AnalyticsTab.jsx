@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, BarChart3, Users, Clock, AlertTriangle } from 'lucide-react';
+import { BarChart3, Users, Clock, AlertTriangle } from 'lucide-react';
 import {
     Card,
     CardContent,
@@ -7,14 +7,10 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { getProjectAnalytics, exportProjectData } from '@/api/analyticsApi';
-import { useToast } from "@/hooks/use-toast"
-import { supabase } from "@/supabaseClient";
+import { getProjectAnalytics } from '@/api/analyticsApi';
 
 const AnalyticsTab = ({ projectId }) => {
     const [loading, setLoading] = useState(true);
-    const [exporting, setExporting] = useState(false);
     const [error, setError] = useState(null);
     const [analytics, setAnalytics] = useState({
         totalPapers: 0,
@@ -31,9 +27,6 @@ const AnalyticsTab = ({ projectId }) => {
         fetchAnalytics();
     }, [projectId]);
 
-    const { toast } = useToast()
-
-
     const fetchAnalytics = async () => {
         try {
             setLoading(true);
@@ -48,51 +41,6 @@ const AnalyticsTab = ({ projectId }) => {
         }
     };
 
-    const handleExport = async () => {
-        try {
-            setExporting(true);
-
-            // The edge function call will return { data, error }
-            const { data, error } = await supabase.functions.invoke('export-project-papers', {
-                body: { project_id: projectId }
-            });
-
-            if (error) throw error;
-            if (!data) throw new Error('No data received from export');
-
-            // Create blob from the CSV data
-            const blob = new Blob([data], { type: 'text/csv' });
-
-            // Create download link
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `project-${projectId}-export.csv`;
-
-            // Trigger download
-            document.body.appendChild(link);
-            link.click();
-
-            // Cleanup
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(link);
-
-            toast({
-                title: "Export Successful",
-                description: "Your project data has been exported successfully.",
-            });
-        } catch (err) {
-            console.error('Error exporting data:', err);
-            toast({
-                title: "Export Failed",
-                description: "There was an error exporting your project data.",
-                variant: "destructive",
-            });
-        } finally {
-            setExporting(false);
-        }
-    };
-
     if (loading) {
         return <div>Loading analytics...</div>;
     }
@@ -101,27 +49,8 @@ const AnalyticsTab = ({ projectId }) => {
         return <div>Error: {error}</div>;
     }
 
-
     return (
         <div className="space-y-6">
-            {/* Export Section */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Export Data</CardTitle>
-                    <CardDescription>Download project reviews and analytics</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Button
-                        onClick={handleExport}
-                        disabled={exporting}
-                        className="gap-2"
-                    >
-                        <Download className="h-4 w-4" />
-                        {exporting ? 'Exporting...' : 'Export Reviews'}
-                    </Button>
-                </CardContent>
-            </Card>
-
             {/* Quick Stats */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
