@@ -1,0 +1,10 @@
+{
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            // "destination": "/index.html"
+            "destination": "https://problemma.ai",
+            "permanent": true
+        }
+    ]
+}

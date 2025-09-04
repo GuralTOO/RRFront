@@ -1,8 +1,9 @@
 {
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "/index.html"
-        }
-    ]
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://problemma.ai",
+      "permanent": true
+    }
+  ]
 }
